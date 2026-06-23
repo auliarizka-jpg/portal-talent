@@ -3,629 +3,572 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Talent Management & OD Systems</title>
+    <title>Enterprise Talent Management System - Module 1 & 2</title>
+    <!-- Font System -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #f4f7f6; padding: 25px 20px; display: flex; flex-direction: column; align-items: center; color: #2b2d42; }
-        
-        /* GERBANG AKSES UTAMA (LOGIN SCREEN) */
-        #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #172a3a 0%, #005a70 100%); display: flex; justify-content: center; align-items: center; z-index: 99999; }
-        .login-box { background: white; padding: 45px; border-radius: 8px; box-shadow: 0 15px 35px rgba(0,0,0,0.3); width: 100%; max-width: 420px; text-align: center; }
-        .login-box i.gate-icon { font-size: 3.5rem; color: #005a70; margin-bottom: 15px; }
-        .login-box h2 { margin-bottom: 8px; color: #172a3a; font-weight: bold; }
-        .login-box p { font-size: 0.85rem; color: #666; margin-bottom: 30px; }
-        .login-field { width: 100%; padding: 12px 16px; margin-bottom: 15px; border: 1px solid #d1dbe0; border-radius: 4px; font-size: 0.95rem; outline: none; }
-        .login-field:focus { border-color: #005a70; }
-        .btn-auth-submit { width: 100%; padding: 12px; background: #005a70; color: white; border: none; border-radius: 4px; font-weight: bold; font-size: 1rem; cursor: pointer; transition: background 0.2s; }
-        .btn-auth-submit:hover { background: #2b7a78; }
-        .login-error { color: #b71c1c; font-size: 0.85rem; margin-top: 12px; display: none; font-weight: 600; }
+        :root {
+            --primary-color: #005a70;
+            --primary-dark: #0f2537;
+            --secondary-teal: #2b7a78;
+            --bg-workspace: #f3f6f9;
+            --bg-card: #ffffff;
+            --text-main: #2b2d42;
+            --text-muted: #6c757d;
+            --border-color: #e2e8f0;
+            
+            /* Status Talent Mapping Colors */
+            --tag-star: #2a9d8f;
+            --tag-high: #0077b6;
+            --tag-promising: #e9c46a;
+            --tag-solid: #4a5568;
+            --tag-developing: #f4a261;
+            --tag-ineffective: #e76f51;
+        }
 
-        /* APLIKASI AREA */
-        #main-app { display: none; width: 100%; max-width: 1150px; }
-        
-        /* COMPONENT: FILTER BAR */
-        .global-filter-card { background: #005a70; color: white; padding: 20px 25px; border-radius: 6px; margin-bottom: 25px; display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap; box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
-        .filter-group { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 220px; }
-        .filter-group label { font-size: 0.85rem; font-weight: bold; color: #d1f2a5; }
-        .filter-group select, .filter-group input { padding: 10px 12px; border-radius: 4px; border: none; font-size: 0.9rem; font-weight: 600; width: 100%; background: white; color: #333; outline: none; }
-        .btn-reset { padding: 10px 20px; background: #2b7a78; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; height: 40px; transition: background 0.2s; }
-        .btn-reset:hover { background: #1e5654; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg-workspace); color: var(--text-main); min-height: 100vh; display: flex; overflow-x: hidden; }
 
-        .section-title { margin: 30px 0 15px 0; color: #005a70; border-bottom: 2px solid #005a70; padding-bottom: 6px; font-size: 1.4rem; display: flex; align-items: center; gap: 10px; font-weight: bold; }
-        
-        /* MODUL 3: MACRO 9-BOX MATRIX HAV */
-        .matrix-container { display: grid; grid-template-columns: 40px 1fr; gap: 10px; background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .y-label { writing-mode: vertical-rl; transform: rotate(180deg); text-align: center; font-weight: bold; color: #005a70; display: flex; justify-content: space-around; font-size: 0.9rem; }
-        .x-label { display: grid; grid-template-columns: repeat(3, 1fr); text-align: center; font-weight: bold; color: #005a70; margin-top: 10px; font-size: 0.9rem; }
-        .matrix-grid-9 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; height: 480px; }
-        .nine-box { border-radius: 4px; padding: 10px; display: flex; flex-direction: column; overflow-y: auto; box-shadow: inset 0 0 8px rgba(0,0,0,0.03); }
-        .nine-box .box-title { font-weight: bold; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 6px; color: #222; }
-        .box-emp-list { display: flex; flex-direction: column; gap: 4px; }
-        .box-emp-item { background: rgba(255,255,255,0.9); padding: 5px 8px; border-radius: 3px; font-size: 0.75rem; font-weight: 600; cursor: pointer; border: 1px solid rgba(0,0,0,0.05); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .box-emp-item:hover { background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.12); }
+        /* SECURITY ACCESS GATEWAY SCREEN */
+        #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%); display: flex; justify-content: center; align-items: center; z-index: 99999; }
+        .login-card { background: var(--bg-card); padding: 45px; border-radius: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.25); width: 100%; max-width: 420px; text-align: center; }
+        .login-card i.main-lock { font-size: 3.5rem; color: var(--primary-color); margin-bottom: 15px; }
+        .login-card h2 { font-size: 1.6rem; color: var(--primary-dark); font-weight: 700; margin-bottom: 6px; }
+        .login-card p { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 25px; }
+        .input-control { width: 100%; padding: 12px 16px; margin-bottom: 15px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.95rem; outline: none; transition: border 0.2s; }
+        .input-control:focus { border-color: var(--primary-color); }
+        .btn-submit-auth { width: 100%; padding: 12px; background: var(--primary-color); color: white; border: none; border-radius: 6px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: background 0.2s; }
+        .btn-submit-auth:hover { background: var(--secondary-teal); }
+        .error-message { color: var(--tag-ineffective); font-size: 0.85rem; margin-top: 12px; display: none; font-weight: 600; }
+        .sync-spinner { display: none; margin-top: 15px; font-size: 0.9rem; font-weight: 600; color: var(--primary-color); }
+        .sync-spinner i { animation: spin 1s linear infinite; margin-right: 6px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* Kuadran 9-Box Visual Styles */
-        .b-star { background: #a8e6cf; border-top: 4px solid #2a9d8f; }
-        .b-emerging-star { background: #dcedc1; border-top: 4px solid #afb42b; }
-        .b-highly-productive { background: #d1f2a5; border-top: 4px solid #7cb342; }
-        .b-promising { background: #a8dadc; border-top: 4px solid #0097a7; }
-        .b-solid-performer { background: #eff1f3; border-top: 4px solid #78909c; }
-        .b-developing { background: #ffd3b6; border-top: 4px solid #f4a261; }
-        .b-developable { background: #ffaaa5; border-top: 4px solid #ffa000; }
-        .b-ineffective { background: #ff8b94; border-top: 4px solid #d32f2f; }
+        /* ENTERPRISE APP SIDEBAR NAVIGATION */
+        .enterprise-sidebar { width: 260px; background: var(--primary-dark); color: white; position: fixed; top: 0; left: 0; height: 100vh; display: flex; flex-direction: column; z-index: 1000; box-shadow: 4px 0 15px rgba(0,0,0,0.05); }
+        .brand-header { padding: 25px 24px; font-size: 1.15rem; font-weight: 700; border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; align-items: center; gap: 12px; letter-spacing: 0.5px; }
+        .brand-header i { color: #cbd5e1; }
+        .nav-menu-list { list-style: none; padding: 20px 0; flex: 1; }
+        .nav-item-link { padding: 14px 24px; cursor: pointer; display: flex; align-items: center; gap: 14px; font-size: 0.95rem; color: #94a3b8; font-weight: 500; transition: all 0.2s; border-left: 4px solid transparent; }
+        .nav-item-link:hover, .nav-item-link.active { background: rgba(255,255,255,0.04); color: white; border-left-color: var(--secondary-teal); }
+        .nav-item-link i { width: 20px; font-size: 1.1rem; text-align: center; }
+        .user-profile-widget { padding: 20px; border-top: 1px solid rgba(255,255,255,0.06); display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: #94a3b8; }
+        .btn-logoff { cursor: pointer; font-size: 1.1rem; }
+        .btn-logoff:hover { color: #f87171; }
 
-        /* MODUL 2: HIERARCHY STRUCTURE */
-        .org-structure-container { display: flex; flex-direction: column; gap: 25px; }
-        .directorate-block { background: white; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); overflow: hidden; border-top: 4px solid #005a70; }
-        .directorate-header { background: #e1e9ef; padding: 12px 20px; font-weight: bold; color: #005a70; font-size: 1.05rem; }
-        .division-grid { padding: 15px; display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 15px; }
-        .division-card { border: 1px solid #d1dbe0; border-radius: 4px; background: #fafbfc; padding: 12px; }
-        .division-title { font-weight: bold; font-size: 0.95rem; color: #2b7a78; margin-bottom: 10px; border-bottom: 1px dashed #ccc; padding-bottom: 4px; }
-        .member-list { display: flex; flex-direction: column; gap: 6px; }
-        .member-row { display: flex; justify-content: space-between; align-items: center; background: white; padding: 8px 12px; border-radius: 4px; border-left: 3px solid #2b7a78; cursor: pointer; transition: transform 0.2s; }
-        .member-row:hover { transform: translateX(4px); background: #eef5f4; }
-        .member-info h4 { font-size: 0.85rem; font-weight: bold; color: #111; }
-        .member-info p { font-size: 0.75rem; color: #666; margin-top: 2px; }
+        /* MAIN WORKSPACE ARCHITECTURE */
+        .workspace-content { margin-left: 260px; padding: 35px; width: calc(100% - 260px); min-height: 100vh; }
+        .module-viewport { display: none; animation: fadeIn 0.3s ease-in-out; }
+        .module-viewport.active-view { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* MODUL 1: PRESISI EMPLOYEE TALENT PROFILE CARD */
-        .employee-card-wrapper { background: #ffffff; border: 2px solid #005a70; border-radius: 4px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); overflow: hidden; }
-        .card-main-title { background-color: #005a70; color: white; text-align: center; font-size: 1.6rem; font-weight: bold; padding: 10px 0; letter-spacing: 0.5px; }
-        .card-grid-layout { display: grid; grid-template-columns: 55% 45%; padding: 12px; gap: 12px; background-color: #ffffff; }
-        .card-left-column, .card-right-column { display: flex; flex-direction: column; gap: 12px; }
-        .card-section { border: 1px solid #a2b9bc; border-radius: 3px; overflow: hidden; background-color: #f0f4f8; }
-        .section-bar-title { background-color: #2b7a78; color: white; font-size: 0.85rem; font-weight: bold; text-align: center; padding: 5px 0; text-transform: uppercase; }
+        /* RE-RENDER FILTER PANEL */
+        .filter-panel-card { background: var(--primary-color); color: white; padding: 20px; border-radius: 8px; margin-bottom: 30px; display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .filter-node { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 180px; }
+        .filter-node label { font-size: 0.75rem; font-weight: 700; color: #cbd5e1; text-transform: uppercase; letter-spacing: 0.5px; }
+        .filter-node select, .filter-node input { padding: 10px 12px; border-radius: 6px; border: none; font-size: 0.85rem; font-weight: 600; background: white; color: #333; outline: none; }
+        .btn-reset-filter { padding: 10px 20px; background: var(--secondary-teal); color: white; border: none; border-radius: 6px; font-weight: 600; height: 38px; cursor: pointer; font-size: 0.85rem; }
+
+        /* MODULE SECTION HEADER */
+        .viewport-header { margin-bottom: 25px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; }
+        .viewport-header h1 { font-size: 1.5rem; color: var(--primary-dark); font-weight: 700; }
+        .viewport-header p { font-size: 0.85rem; color: var(--text-muted); margin-top: 4px; }
+
+        /* DASHBOARD METRICS CARDS GRID */
+        .dashboard-kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 25px; margin-bottom: 35px; }
+        .kpi-card { background: var(--bg-card); padding: 24px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; }
+        .kpi-data h3 { font-size: 2rem; font-weight: 700; color: var(--primary-dark); }
+        .kpi-data p { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
+        .kpi-icon-wrapper { width: 50px; height: 50px; border-radius: 8px; background: #f0f5f7; color: var(--primary-color); display: flex; align-items: center; justify-content: center; font-size: 1.3rem; }
+
+        /* ANALYTICS CHARTS GRID LAYOUT */
+        .analytics-charts-container { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        .chart-visual-card { background: var(--bg-card); border-radius: 8px; border: 1px solid var(--border-color); padding: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .chart-visual-card h3 { font-size: 0.9rem; font-weight: 700; color: var(--primary-dark); border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.5px; }
         
-        .personnel-container { display: grid; grid-template-columns: 1fr 150px; }
-        .table-form { width: 100%; border-collapse: collapse; }
-        .table-form td { border: 1px solid #d1dbe0; padding: 6px 10px; font-size: 0.85rem; height: 32px; vertical-align: middle; }
-        .table-form td.label-cell { background-color: #e1e9ef; font-weight: 600; width: 30%; color: #333; }
-        .table-form td.value-cell { background-color: #ffffff; color: #111; }
-        .photo-container { border-left: 1px solid #d1dbe0; background-color: #e1e9ef; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #555; font-size: 0.85rem; font-weight: bold; padding: 10px; text-align: center; }
+        .distribution-chart-stack { display: flex; flex-direction: column; gap: 16px; }
+        .bar-node { display: flex; flex-direction: column; gap: 6px; }
+        .bar-label-info { display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 600; }
+        .bar-rail { width: 100%; height: 8px; background: #edf2f7; border-radius: 4px; overflow: hidden; }
+        .bar-core-fill { height: 100%; border-radius: 4px; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        /* ========================================================================= */
+        /* MODUL 2: OPERATIONAL STRUCTURE CHART VIEW (MATCH IMAGE REFERENCE)          */
+        /* ========================================================================= */
+        .org-structure-layout-split { display: grid; grid-template-columns: 60% 40%; gap: 30px; align-items: start; }
+        .tree-viewport-card { background: var(--bg-card); padding: 30px; border-radius: 8px; border: 1px solid var(--border-color); box-shadow: 0 4px 10px rgba(0,0,0,0.02); min-height: 500px; display: flex; flex-direction: column; align-items: center; overflow-x: auto; }
         
-        .row-two-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .history-table { width: 100%; border-collapse: collapse; background-color: #ffffff; }
-        .history-table th { background-color: #e1e9ef; color: #333; font-size: 0.8rem; border: 1px solid #d1dbe0; padding: 6px; font-weight: bold; }
-        .history-table td { border: 1px solid #d1dbe0; padding: 6px 10px; font-size: 0.8rem; height: 28px; color: #333; }
+        /* Bagan Diagram Kotak CSS Tree */
+        .chart-tree-root { display: flex; flex-direction: column; align-items: center; width: 100%; }
+        .tree-node-block { background: var(--primary-dark); color: white; padding: 12px 24px; border-radius: 6px; font-weight: 700; font-size: 0.95rem; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); letter-spacing: 0.5px; min-width: 180px; }
+        .tree-node-block.dir-box { background: #eef5f6; color: var(--primary-color); border: 2px solid var(--primary-color); }
+        .tree-node-block.div-box { background: var(--primary-color); color: white; min-width: 200px; }
+        .tree-node-block.dept-box { background: white; color: var(--text-main); border: 1px solid var(--border-color); border-top: 4px solid var(--secondary-teal); box-shadow: 0 2px 5px rgba(0,0,0,0.05); min-width: 160px; text-align: left; padding: 10px 14px; }
+        .tree-node-block.dept-box h4 { font-size: 0.85rem; font-weight: 700; color: var(--primary-dark); }
+        .tree-node-block.dept-box p { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; font-weight: 500; }
         
-        .current-role-box { background-color: #ffffff; min-height: 90px; padding: 10px; font-size: 0.85rem; line-height: 1.4; border: 1px solid #d1dbe0; white-space: pre-line; color: #333; }
-        .text-area-box { background-color: #ffffff; min-height: 75px; padding: 8px; font-size: 0.8rem; border: 1px solid #d1dbe0; white-space: pre-line; color: #333; }
+        .tree-branch-connector { width: 2px; height: 24px; background-color: var(--text-muted); }
+        .tree-horizontal-grid { display: flex; justify-content: center; gap: 20px; width: 100%; position: relative; }
         
-        .assessment-grid-table { width: 100%; border-collapse: collapse; background: white; }
-        .assessment-grid-table th { background-color: #2b7a78; color: white; font-size: 0.8rem; padding: 6px 4px; border: 1px solid #a2b9bc; }
-        .assessment-grid-table td { border: 1px solid #d1dbe0; padding: 6px; font-size: 0.8rem; text-align: center; }
-        .assessment-grid-table td.criteria-label { text-align: left; padding-left: 8px; font-weight: 500; background-color: #ffffff; width: 50%; }
-        .assessment-grid-table td.score-dot i { color: #005a70; font-size: 0.8rem; }
-        
-        .human-asset-container { display: grid; grid-template-columns: 42% 58%; background-color: #ffffff; padding: 10px; gap: 10px; }
-        .asset-scores { font-size: 0.9rem; font-weight: bold; color: #005a70; display: flex; flex-direction: column; justify-content: center; gap: 8px; }
-        .asset-scores span { color: #333; font-weight: 500; }
-        
-        .mini-9box-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; background-color: #ccc; padding: 3px; border-radius: 2px; }
-        .mini-box { background-color: #fff; padding: 4px; font-size: 0.55rem; text-align: center; font-weight: bold; min-height: 42px; display: flex; flex-direction: column; justify-content: center; line-height: 1.1; }
-        .mini-box span { font-weight: normal; font-size: 0.43rem; color: #555; display: block; }
-        .mini-box.active-placement { outline: 3px solid #000; box-shadow: 0 0 6px rgba(0,0,0,0.6); z-index: 2; transform: scale(1.03); }
-        .no-data-msg { text-align: center; padding: 20px; background: white; border: 1px solid #d1dbe0; font-style: italic; color: #666; width: 100%; }
+        /* Sub-Department Lists Alignments */
+        .dept-flex-row { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-top: 10px; width: 100%; }
     </style>
 </head>
 <body>
 
+    <!-- SECURE GATEWAY SCREEN -->
     <div id="login-screen">
-        <div class="login-box">
-            <i class="fa-solid fa-shield-halved gate-icon"></i>
-            <h2>Talent Portal Gateway</h2>
-            <p>Protected Enterprise O&D Administration Gateway</p>
-            <input type="text" id="username" class="login-input" placeholder="Username Korporat (admin@enterprise.co.id)">
-            <input type="password" id="password" class="login-input" placeholder="Password Akses">
-            <button class="btn-login" onclick="checkAuth()">Otentikasi & Masuk</button>
-            <div id="login-error" class="login-error">Kredensial salah atau tidak berwenang!</div>
-        </div>
-    </div>
-
-    <div id="main-app">
-        <div class="global-filter-card">
-            <div class="filter-group">
-                <label><i class="fa-solid fa-building"></i> Filter Directorate</label>
-                <select id="filterDirectorate" onchange="applyFilters()"><option value="ALL">-- Semua --</option></select>
-            </div>
-            <div class="filter-group">
-                <label><i class="fa-solid fa-network-wired"></i> Filter Division</label>
-                <select id="filterDivision" onchange="applyFilters()"><option value="ALL">-- Semua --</option></select>
-            </div>
-            <div class="filter-group">
-                <label><i class="fa-solid fa-magnifying-glass"></i> Cari Nama / ID Karyawan</label>
-                <input type="text" id="searchKeyword" placeholder="Ketik kata kunci nama..." oninput="applyFilters()">
-            </div>
-            <button class="btn-reset" onclick="resetFilters()"><i class="fa-solid fa-rotate-left"></i> Reset Filter</button>
-        </div>
-
-        <div class="section-title"><i class="fa-solid fa-table-cells-large"></i> Human Asset Value (9-Box Matrix Grid)</div>
-        <div class="matrix-container">
-            <div class="y-label"><div>HIGH POTENTIAL</div><div>MEDIUM POTENTIAL</div><div>LOW POTENTIAL</div></div>
-            <div>
-                <div id="matrixGrid" class="matrix-grid-9"></div>
-                <div class="x-label"><div>LOW PERFORMANCE</div><div>MEDIUM PERFORMANCE</div><div>HIGH PERFORMANCE</div></div>
-            </div>
-        </div>
-
-        <div class="section-title"><i class="fa-solid fa-sitemap"></i> Struktur Hirarki Direktorat & Komposisi Divisi</div>
-        <div id="orgStructureView" class="org-structure-container"></div>
-
-        <div class="section-title" id="talentCardSectionTarget"><i class="fa-solid fa-id-card"></i> Lembar Cetak Employee Talent Card</div>
-        <div id="talentCardContainer"></div>
-    </div>
-
-    <script>
-        // KREDENSIAL AKSES TETAP APLIKASI
-        const AUTH_CONFIG = { user: "admin@enterprise.co.id", pass: "HrisSuccess2026!" };
-
-        // =========================================================================
-        // DATASET AMAN DAN SUDAH DIVALIDASI BEBAS TYPO SINTAKS
-        // =========================================================================
-        const EMPLOYEE_DATABASE = [
-          {
-            "employeeId": "1002345",
-            "nama": "Arya Wijaya, M.T.",
-            "age": "42",
-            "gender": "Male",
-            "directorate": "Directorate of Technology",
-            "division": "Information Technology",
-            "department": "Enterprise Architecture",
-            "level": "VP / Level 5",
-            "employeePosition": "VP of Enterprise Architecture",
-            "buSuHead": "Budi Santoso",
-            "levelOfEducation": "S2",
-            "education": "Institut Teknologi Bandung",
-            "otherEducation": "Executive Leadership Program NUS",
-            "professionalCertification": "TOGAF 9.2, PMP, AWS Certified Solutions Architect Professional",
-            "tenure": "12 Years 4 Months",
-            "yearToRetirement": "13 Years",
-            "currentRole": "Memimpin perancangan blueprint arsitektur teknologi informasi korporasi jangka panjang skala multi-nasional, mengintegrasikan sistem core digital modern, serta mengorkestrasikan infrastruktur cloud hybrid.",
-            "talentAspiration": "Menjadi Chief Technology Officer (CTO) dalam 2 tahun ke depan dengan fokus transformasi AI.",
-            "managerComment": "Arya menunjukkan kapabilitas arsitektural yang sangat luar biasa dan kepemimpinan tim yang matang. Siap dipromosikan lebih tinggi.",
-            "latestKpi1": "94.5 (A)",
-            "perf2024": "94.5",
-            "perf2023": "92.0",
-            "perf2022": "91.2",
-            "problemSolving": 5,
-            "buildingRelationship": 4,
-            "teamCollaboration": 5,
-            "achievingGoals": 5,
-            "trustworthiness": 5,
-            "leadingPeople": 4,
-            "customerOrientation": 4,
-            "businessSavvy": 5,
-            "humanAssetValuePerformance": "High",
-            "humanAssetValuePotential": "High",
-            "box9HavMatrix": "STAR"
-          },
-          {
-            "employeeId": "1004561",
-            "nama": "Riana Lestari, S.E.",
-            "age": "38",
-            "gender": "Female",
-            "directorate": "Directorate of Finance",
-            "division": "Accounting & Tax",
-            "department": "General Accounting",
-            "level": "Manager / Level 4",
-            "employeePosition": "Head of General Accounting",
-            "buSuHead": "Hendra Wijaya",
-            "levelOfEducation": "S1",
-            "education": "Universitas Gadjah Mada",
-            "otherEducation": "Pendidikan Profesi Akuntansi (PPAk)",
-            "professionalCertification": "Chartered Accountant (CA), CPA Indonesia",
-            "tenure": "8 Years",
-            "yearToRetirement": "17 Years",
-            "currentRole": "Mengawasi penyusunan laporan keuangan konsolidasi bulanan dan tahunan perusahaan, memitigasi risiko perpajakan korporasi, serta berkoordinasi langsung dengan auditor eksternal.",
-            "talentAspiration": "Menjadi Financial Controller / VP of Finance.",
-            "managerComment": "Sangat teliti, patuh terhadap aturan (compliance), performa konsisten stabil setiap tahun.",
-            "latestKpi1": "88.0 (B)",
-            "perf2024": "88.0",
-            "perf2023": "87.5",
-            "perf2022": "88.2",
-            "problemSolving": 4,
-            "buildingRelationship": 4,
-            "teamCollaboration": 4,
-            "achievingGoals": 4,
-            "trustworthiness": 5,
-            "leadingPeople": 4,
-            "customerOrientation": 4,
-            "businessSavvy": 4,
-            "humanAssetValuePerformance": "Medium",
-            "humanAssetValuePotential": "Medium",
-            "box9HavMatrix": "PROMISING"
-          },
-          {
-            "employeeId": "1007892",
-            "nama": "Dimas Anggara",
-            "age": "29",
-            "gender": "Male",
-            "directorate": "Directorate of Technology",
-            "division": "Information Technology",
-            "department": "Core Systems Development",
-            "level": "Senior Officer / Level 3",
-            "employeePosition": "Senior Fullstack Developer",
-            "buSuHead": "Budi Santoso",
-            "levelOfEducation": "S1",
-            "education": "Binus University",
-            "otherEducation": "Bootcamp Fullstack Developer - Hacktiv8",
-            "professionalCertification": "Oracle Certified Professional, Professional Scrum Master I",
-            "tenure": "2 Years 8 Months",
-            "yearToRetirement": "26 Years",
-            "currentRole": "Bertanggung jawab melakukan coding, integrasi REST API, pemeliharaan basis data relasional dan non-relasional, serta memastikan performa aplikasi front-end dan back-end berjalan optimal.",
-            "talentAspiration": "Menjadi Solution Architect / IT Technical Lead dalam kurun waktu 1-2 tahun.",
-            "managerComment": "Keahlian teknis sangat menonjol dan cepat mempelajari framework baru. Butuh bimbingan sedikit di sisi kepemimpinan.",
-            "latestKpi1": "86.5 (B)",
-            "perf2024": "86.5",
-            "perf2023": "85.0",
-            "perf2022": "-",
-            "problemSolving": 5,
-            "buildingRelationship": 3,
-            "teamCollaboration": 4,
-            "achievingGoals": 4,
-            "trustworthiness": 4,
-            "leadingPeople": 3,
-            "customerOrientation": 3,
-            "businessSavvy": 3,
-            "humanAssetValuePerformance": "Medium",
-            "humanAssetValuePotential": "High",
-            "box9HavMatrix": "EMERGING STAR"
-          },
-          {
-            "employeeId": "1001122",
-            "nama": "Siti Rahmawati, M.Psi.",
-            "age": "35",
-            "gender": "Female",
-            "directorate": "Directorate of Human Capital",
-            "division": "Talent Management & OD",
-            "department": "Organizational Development",
-            "level": "Manager / Level 4",
-            "managerId": "1001005",
-            "directManager": "Rian Perkasa",
-            "employeePosition": "Manager Organizational Development",
-            "positionCategory": "Core Strategic",
-            "joinDate": "14 Feb 2021",
-            "contractStatus": "Permanent",
-            "tenure": "5 Years",
-            "birthLocation": "Jakarta",
-            "dob": "10 May 1991",
-            "religion": "Islam",
-            "levelOfEducation": "S2",
-            "education": "Universitas Indonesia",
-            "otherEducation": "Certification in Strategic HR Management - CHRMP",
-            "professionalCertification": "Certified Assessment Center Assessor, CPI Specialist",
-            "currentRole": "Mengelola perancangan struktur organisasi makro, pelaksanaan siklus performance management, pemetaan suksesi (succession planning), serta penyusunan profil kompetensi seluruh lini bisnis.",
-            "talentAspiration": "Menjadi Head of Human Capital Development di level korporat induk.",
-            "managerComment": "Sangat terstruktur, analytical thinking kuat, interaksi interpersonal luar biasa efektif.",
-            "latestKpi1": "91.0 (A)",
-            "perf2024": "91.0",
-            "perf2023": "89.5",
-            "perf2022": "88.0",
-            "problemSolving": 4,
-            "buildingRelationship": 5,
-            "teamCollaboration": 5,
-            "achievingGoals": 4,
-            "trustworthiness": 5,
-            "leadingPeople": 4,
-            "customerOrientation": 5,
-            "businessSavvy": 4,
-            "humanAssetValuePerformance": "High",
-            "humanAssetValuePotential": "Medium",
-            "box9HavMatrix": "HIGH PERFORMER"
-          },
-          {
-            "employeeId": "1009944",
-            "nama": "Taufik Hidayat",
-            "age": "45",
-            "gender": "Male",
-            "directorate": "Directorate of Finance",
-            "division": "Accounting & Tax",
-            "department": "Taxation",
-            "level": "Officer / Level 2",
-            "employeePosition": "Tax Officer",
-            "buSuHead": "Hendra Wijaya",
-            "levelOfEducation": "D3",
-            "education": "STAN",
-            "otherEducation": "Kursus Brevet A & B",
-            "professionalCertification": "Brevet Pajak Terakreditasi",
-            "tenure": "10 Years",
-            "yearToRetirement": "10 Years",
-            "currentRole": "Melaksanakan administrasi pelaporan SPT masa PPN, PPh pasal 21/23/25, pengarsipan dokumen perpajakan, dan rekonsiliasi faktur pajak.",
-            "talentAspiration": "Tetap berkontribusi di bidang spesialis perpajakan operasional.",
-            "managerComment": "Perlu dorongan inisiatif ekstra dalam menyelesaikan problem kompleks, cenderung pasif menerima instruksi.",
-            "latestKpi1": "68.0 (C)",
-            "perf2024": "68.0",
-            "perf2023": "70.5",
-            "perf2022": "71.0",
-            "problemSolving": 2,
-            "buildingRelationship": 3,
-            "teamCollaboration": 3,
-            "achievingGoals": 2,
-            "trustworthiness": 4,
-            "leadingPeople": 2,
-            "customerOrientation": 3,
-            "businessSavvy": 2,
-            "humanAssetValuePerformance": "Low",
-            "humanAssetValuePotential": "Low",
-            "box9HavMatrix": "INEFFECTIVE"
-          }
-        ];
-
-        let filteredData = [...EMPLOYEE_DATABASE];
-        let selectedEmpId = EMPLOYEE_DATABASE.length > 0 ? EMPLOYEE_DATABASE[0].employeeId : "";
-
-        const MATRIX_POSITIONS = [
-            { r: "High", p: "Low", cat: "DEVELOPING", class: "b-developing" },
-            { r: "High", p: "Medium", cat: "EMERGING STAR", class: "b-emerging-star" },
-            { r: "High", p: "High", cat: "STAR", class: "b-star" },
-            { r: "Medium", p: "Low", cat: "DEVELOPABLE", class: "b-developable" },
-            { r: "Medium", p: "Medium", cat: "PROMISING", class: "b-promising" },
-            { r: "Medium", p: "High", cat: "EMERGING STAR", class: "b-emerging-star" },
-            { r: "Low", p: "Low", cat: "INEFFECTIVE", class: "b-ineffective" },
-            { r: "Low", p: "Medium", cat: "SOLID PERFORMER", class: "b-solid-performer" },
-            { r: "Low", p: "High", cat: "HIGH PRODUCTIVE", class: "b-highly-productive" }
-        ];
-
-        function checkAuth() {
-            const u = document.getElementById("username").value;
-            const p = document.getElementById("password").value;
-            if (u === AUTH_CONFIG.user && p === AUTH_CONFIG.pass) {
-                document.getElementById("login-screen").style.display = "none";
-                document.getElementById("main-app").style.display = "block";
-                initTalentSystem();
-            } else {
-                document.getElementById("login-error").style.display = "block";
-            }
-        }
-
-        function initTalentSystem() {
-            buildFilterDropdowns();
-            executeRenderComponents();
-        }
-
-        function buildFilterDropdowns() {
-            const dirSelect = document.getElementById("filterDirectorate");
-            const divSelect = document.getElementById("filterDivision");
-            dirSelect.innerHTML = '<option value="ALL">-- Semua Directorate --</option>';
-            divSelect.innerHTML = '<option value="ALL">-- Semua Division --</option>';
-
-            const uniqueDirs = [...new Set(EMPLOYEE_DATABASE.map(e => e.directorate).filter(Boolean))];
-            const uniqueDivs = [...new Set(EMPLOYEE_DATABASE.map(e => e.division).filter(Boolean))];
-
-            uniqueDirs.forEach(d => dirSelect.innerHTML += `<option value="${d}">${d}</option>`);
-            uniqueDivs.forEach(v => divSelect.innerHTML += `<option value="${v}">${v}</option>`);
-        }
-
-        function applyFilters() {
-            const selectedDir = document.getElementById("filterDirectorate").value;
-            const selectedDiv = document.getElementById("filterDivision").value;
-            const keyword = document.getElementById("searchKeyword").value.toLowerCase().trim();
-
-            filteredData = EMPLOYEE_DATABASE.filter(emp => {
-                const matchDir = (selectedDir === "ALL" || emp.directorate === selectedDir);
-                const matchDiv = (selectedDiv === "ALL" || emp.division === selectedDiv);
-                const matchKey = !keyword || (emp.nama && emp.nama.toLowerCase().includes(keyword)) || (emp.employeeId && emp.employeeId.toString().toLowerCase().includes(keyword));
-                return matchDir && matchDiv && matchKey;
-            });
-            executeRenderComponents();
-        }
-
-        function resetFilters() {
-            document.getElementById("filterDirectorate").value = "ALL";
-            document.getElementById("filterDivision").value = "ALL";
-            document.getElementById("searchKeyword").value = "";
-            filteredData = [...EMPLOYEE_DATABASE];
-            executeRenderComponents();
-        }
-
-        function executeRenderComponents() {
-            render9BoxMatrix();
-            renderOrgStructure();
-            renderTalentCard();
-        }
-
-        function render9BoxMatrix() {
-            const grid = document.getElementById("matrixGrid");
-            grid.innerHTML = "";
+        <div class="login-card">
+            <i class="fa-solid fa-shield-halved main-lock"></i>
+            <h2>Enterprise Portal Gateway</h2>
+            <p>Aplikasi ini terbatas hanya untuk personil HR & OD</p>
+            <input type="text" id="username" class="input-control" placeholder="Email Korporat (admin@enterprise.co.id)">
+            <input type="password" id="password" class="input-control" placeholder="Password Akses">
+            <button class="btn-submit-auth" onclick="executeAuthenticationRequest()">Otentikasi & Masuk</button>
             
-            MATRIX_POSITIONS.forEach(pos => {
-                let boxDiv = document.createElement("div");
-                boxDiv.className = `nine-box ${pos.class}`;
-                boxDiv.innerHTML = `<div class="box-title">${pos.cat}</div>`;
+            <div id="loadingStatus" class="sync-spinner">
+                <i class="fa-solid fa-spinner"></i> Sinkronisasi Live Data Google Sheets...
+            </div>
+            <div id="login-error" class="error-message">Kredensial salah atau tidak memiliki otorisasi!</div>
+        </div>
+    </div>
+
+    <!-- CORE ARCHITECTURE SHELL -->
+    <div id="app-shell" style="display: none; width: 100%;">
+        
+        <!-- SIDEBAR NAVIGATION PANEL -->
+        <div class="enterprise-sidebar">
+            <div class="brand-header">
+                <i class="fa-solid fa-cubes-stacked"></i>
+                <span>Talent Intelligence</span>
+            </div>
+            <ul class="nav-menu-list">
+                <li class="nav-item-link active" id="tab-dashboard" onclick="switchActiveViewport('dashboard')"><i class="fa-solid fa-chart-pie"></i> Executive Dashboard</li>
+                <li class="nav-item-link" id="tab-organization" onclick="switchActiveViewport('organization')"><i class="fa-solid fa-sitemap"></i> Organization Structure</li>
+                <li class="nav-item-link" id="tab-talentPool" onclick="switchActiveViewport('talentPool')"><i class="fa-solid fa-user-gear"></i> Talent Pool Card</li>
+                <li class="nav-item-link" id="tab-matrix9box" onclick="switchActiveViewport('matrix9box')"><i class="fa-solid fa-table-cells-large"></i> 9-Box HAV Matrix</li>
+            </ul>
+            <div class="user-profile-widget">
+                <div><i class="fa-solid fa-circle-user"></i> Administrator</div>
+                <i class="fa-solid fa-right-from-bracket btn-logoff" onclick="executeLogoffProcedure()" title="Keluar Sistem"></i>
+            </div>
+        </div>
+
+        <!-- MAIN WORKSPACE VIEWPORT CONTAINER -->
+        <div class="workspace-content">
+            
+            <!-- GLOBAL DYNAMIC FILTER MATRIX BAR -->
+            <div class="filter-panel-card">
+                <div class="filter-node">
+                    <label>Directorate</label>
+                    <select id="selDirectorate" onchange="handleDirectorateFilterChange()"><option value="ALL">-- All Directorate --</option></select>
+                </div>
+                <div class="filter-node">
+                    <label>Division</label>
+                    <select id="selDivision" onchange="applyGlobalFiltersRecomputation()"><option value="ALL">-- All Division --</option></select>
+                </div>
+                <div class="filter-node">
+                    <label>Search Employee</label>
+                    <input type="text" id="inpSearch" placeholder="Ketik nama / ID..." oninput="applyGlobalFiltersRecomputation()">
+                </div>
+                <button class="btn-reset-filter" onclick="resetGlobalFiltersSystem()">Reset Filter</button>
+            </div>
+
+            <!-- VIEWPORT 1: EXECUTIVE DASHBOARD -->
+            <div id="view-dashboard" class="module-viewport active-view">
+                <div class="viewport-header">
+                    <h1>Workforce Analytics Dashboard</h1>
+                    <p>Ringkasan performa makro organisasi terintegrasi langsung dengan database internal.</p>
+                </div>
                 
-                let listDiv = document.createElement("div");
-                listDiv.className = "box-emp-list";
+                <div class="dashboard-kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-data"><h3 id="kpiTotalEmp">0</h3><p>Total Headcount</p></div>
+                        <div class="kpi-icon-wrapper"><i class="fa-solid fa-users"></i></div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-data"><h3 id="kpiTotalDir">0</h3><p>Directorate Count</p></div>
+                        <div class="kpi-icon-wrapper"><i class="fa-solid fa-building"></i></div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-data"><h3 id="kpiTotalDiv">0</h3><p>Division Count</p></div>
+                        <div class="kpi-icon-wrapper"><i class="fa-solid fa-network-wired"></i></div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-data"><h3 id="kpiAvgPerf">0.0</h3><p>Avg Performance Score</p></div>
+                        <div class="kpi-icon-wrapper"><i class="fa-solid fa-star-half-stroke"></i></div>
+                    </div>
+                </div>
 
-                let matches = filteredData.filter(e => {
-                    let perf = e.humanAssetValuePerformance ? e.humanAssetValuePerformance.trim() : "";
-                    let pot = e.humanAssetValuePotential ? e.humanAssetValuePotential.trim() : "";
-                    return perf.toLowerCase() === pos.p.toLowerCase() && pot.toLowerCase() === pos.r.toLowerCase();
-                });
+                <div class="analytics-charts-container">
+                    <div class="chart-visual-card">
+                        <h3>Talent Segment Distribution Density</h3>
+                        <div id="chartTalentClassAnchor" class="distribution-chart-stack"></div>
+                    </div>
+                    <div class="chart-visual-card">
+                        <h3>Human Asset Value Concentration Index</h3>
+                        <div id="chartHavAnchor" class="distribution-chart-stack"></div>
+                    </div>
+                </div>
+            </div>
 
-                matches.forEach(emp => {
-                    let item = document.createElement("div");
-                    item.className = "box-emp-item";
-                    item.innerText = emp.nama;
-                    item.title = `${emp.nama} - ${emp.employeePosition}`;
-                    item.onclick = () => selectEmployee(emp.employeeId);
-                    listDiv.appendChild(item);
-                });
-                boxDiv.appendChild(listDiv);
-                grid.appendChild(boxDiv);
-            });
-        }
-
-        function renderOrgStructure() {
-            const container = document.getElementById("orgStructureView");
-            container.innerHTML = "";
-            if (filteredData.length === 0) {
-                container.innerHTML = '<div class="no-data-msg">Tidak ada data hirarki cocok filter.</div>';
-                return;
-            }
-
-            const structureMap = {};
-            filteredData.forEach(emp => {
-                let dir = emp.directorate || "Tanpa Directorate";
-                let div = emp.division || "Tanpa Division";
-                if (!structureMap[dir]) structureMap[dir] = {};
-                if (!structureMap[dir][div]) structureMap[dir][div] = [];
-                structureMap[dir][div].push(emp);
-            });
-
-            for (const dirName in structureMap) {
-                let block = document.createElement("div");
-                block.className = "directorate-block";
-                block.innerHTML = `<div class="directorate-header"><i class="fa-solid fa-building-user"></i> ${dirName}</div>`;
+            <!-- VIEWPORT 2: ORGANIZATION STRUCTURE TREE (LIVE SYNC MAPPED) -->
+            <div id="view-organization" class="module-viewport">
+                <div class="viewport-header">
+                    <h1>Workforce Analytics & Organization Structure Explorer</h1>
+                    <p>Visualisasi struktur bagan kedudukan komparatif fungsional korporasi.</p>
+                </div>
                 
-                let grid = document.createElement("div");
-                grid.className = "division-grid";
-
-                for (const divName in structureMap[dirName]) {
-                    let card = document.createElement("div");
-                    card.className = "division-card";
-                    card.innerHTML = `<div class="division-title">${divName}</div>`;
-                    
-                    let list = document.createElement("div");
-                    list.className = "member-list";
-
-                    structureMap[dirName][divName].forEach(emp => {
-                        let row = document.createElement("div");
-                        row.className = "member-row";
-                        row.onclick = () => selectEmployee(emp.employeeId);
-                        row.innerHTML = `<div class="member-info"><h4>${emp.nama}</h4><p>${emp.employeePosition} (${emp.employeeId})</p></div>`;
-                        list.appendChild(row);
-                    });
-                    card.appendChild(list);
-                    grid.appendChild(card);
-                }
-                block.appendChild(grid);
-                container.appendChild(block);
-            }
-        }
-
-        function selectEmployee(id) {
-            selectedEmpId = id;
-            renderTalentCard();
-            document.getElementById("talentCardSectionTarget").scrollIntoView({ behavior: 'smooth' });
-        }
-
-        function renderTalentCard() {
-            const container = document.getElementById("talentCardContainer");
-            const emp = EMPLOYEE_DATABASE.find(e => e.employeeId === selectedEmpId);
-            if (!emp) {
-                container.innerHTML = '<div class="no-data-msg">Silakan pilih karyawan di atas untuk membuka Talent Card.</div>';
-                return;
-            }
-
-            const checkDot = (score, col) => score === col ? '<i class="fa-solid fa-circle"></i>' : '';
-            const targetBox = emp.box9HavMatrix ? emp.box9HavMatrix.toUpperCase().trim() : "";
-
-            container.innerHTML = `
-                <div class="employee-card-wrapper">
-                    <div class="card-main-title">Employee Card</div>
-                    <div class="card-grid-layout">
-                        <div class="card-left-column">
-                            <div class="card-section">
-                                <div class="section-bar-title">Personnel Data</div>
-                                <div class="personnel-container">
-                                    <table class="table-form">
-                                        <tr><td class="label-cell">Name</td><td class="value-cell"><strong>${emp.nama || '-'}</strong></td></tr>
-                                        <tr><td class="label-cell">Age</td><td class="value-cell">${emp.age || '-'} Years Old</td></tr>
-                                        <tr><td class="label-cell">Gender</td><td class="value-cell">${emp.gender || '-'}</td></tr>
-                                        <tr><td class="label-cell">BU/SU Head</td><td class="value-cell">${emp.buSuHead || '-'}</td></tr>
-                                        <tr><td class="label-cell">Div/Dept</td><td class="value-cell">${emp.directorate || '-'} / ${emp.division || '-'}</td></tr>
-                                        <tr><td class="label-cell">Job Position</td><td class="value-cell">${emp.employeePosition || '-'}</td></tr>
-                                        <tr><td class="label-cell">Level</td><td class="value-cell">${emp.level || '-'}</td></tr>
-                                    </table>
-                                    <div class="photo-container"><i class="fa-solid fa-user-tie" style="font-size:3.5rem; color:#2b7a78; margin-bottom:5px;"></i>Photo</div>
-                                </div>
-                            </div>
-                            <div class="row-two-columns">
-                                <div class="card-section">
-                                    <div class="section-bar-title">Qualification</div>
-                                    <table class="table-form">
-                                        <tr><td class="label-cell">Degree</td><td class="value-cell" style="font-size:0.75rem;">${emp.levelOfEducation || '-'} - ${emp.education || '-'}</td></tr>
-                                        <tr><td class="label-cell">Other Ed.</td><td class="value-cell" style="font-size:0.75rem;">${emp.otherEducation || '-'}</td></tr>
-                                        <tr><td class="label-cell">Certif.</td><td class="value-cell" style="font-size:0.7rem;">${emp.professionalCertification || '-'}</td></tr>
-                                    </table>
-                                </div>
-                                <div class="card-section">
-                                    <div class="section-bar-title">Tenure</div>
-                                    <table class="table-form">
-                                        <tr><td class="label-cell">Position</td><td class="value-cell">-</td></tr>
-                                        <tr><td class="label-cell">Company</td><td class="value-cell">${emp.tenure || '-'}</td></tr>
-                                        <tr><td class="label-cell">Total Exp</td><td class="value-cell">${emp.tenure || '-'}</td></tr>
-                                        <tr><td class="label-cell">Retirement</td><td class="value-cell">${emp.yearToRetirement || '-'}</td></tr>
-                                    </table>
-                                </div>
-                            </div>
-                            <div class="card-section">
-                                <div class="section-bar-title">Employment History</div>
-                                <table class="history-table">
-                                    <thead><tr><th>Job Position</th><th>Employer</th><th>Start</th><th>End</th></tr></thead>
-                                    <tbody>
-                                        <tr><td>${emp.employeePosition || '-'}</td><td>Internal Corp</td><td>-</td><td>Present</td></tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                <div class="org-structure-layout-split">
+                    <!-- Sisi Kiri: Bagan Pohon Struktur -->
+                    <div class="tree-viewport-card">
+                        <div class="chart-tree-root">
+                            <div class="tree-node-block">ORGANIZATION</div>
+                            <div class="tree-branch-connector"></div>
+                            
+                            <!-- Wadah Tempat Suntikan Struktur Cabang via JS -->
+                            <div id="htmlTreeLiveAnchor" style="width:100%; display:flex; flex-direction:column; align-items:center;"></div>
                         </div>
-                        <div class="card-right-column">
-                            <div class="card-section"><div class="section-bar-title">Current Role</div><div class="current-role-box">${emp.currentRole || '-'}</div></div>
-                            <div class="row-two-columns">
-                                <div class="card-section"><div class="section-bar-title">Talent Aspirations</div><div class="text-area-box">${emp.talentAspiration || '-'}</div></div>
-                                <div class="card-section"><div class="section-bar-title">Manager Comment</div><div class="text-area-box">${emp.managerComment || '-'}</div></div>
+                    </div>
+                    
+                    <!-- Sisi Kanan: Panel Summary Stats Mini -->
+                    <div class="chart-visual-card" style="margin-bottom:0;">
+                        <h3>HR Mini Dashboard (Filtered)</h3>
+                        <div class="dashboard-kpi-grid" style="grid-template-columns: 1fr; gap:15px; margin-bottom:0;">
+                            <div class="kpi-card" style="padding:15px;">
+                                <div class="kpi-data"><h3 id="miniKpiCount">0</h3><p>Active Employees Filtered</p></div>
                             </div>
-                            <div class="row-two-columns">
-                                <div class="card-section"><div class="section-bar-title">Latest KPI</div><div style="background:white; min-height:84px; display:flex; justify-content:center; align-items:center; font-size:1.8rem; font-weight:bold; color:#005a70;">${emp.latestKpi1 || '-'}</div></div>
-                                <div class="card-section">
-                                    <div class="section-bar-title">Performance Appraisal</div>
-                                    <table class="table-form">
-                                        <tr><td class="label-cell">2024</td><td class="value-cell">${emp.perf2024 || '-'}</td></tr>
-                                        <tr><td class="label-cell">2023</td><td class="value-cell">${emp.perf2023 || '-'}</td></tr>
-                                        <tr><td class="label-cell">2022</td><td class="value-cell">${emp.perf2022 || '-'}</td></tr>
-                                    </table>
-                                </div>
-                            </div>
-                            <div class="card-section">
-                                <table class="assessment-grid-table">
-                                    <thead><tr><th>Assessment</th><th style="width:9%;">1</th><th style="width:9%;">2</th><th style="width:9%;">3</th><th style="width:9%;">4</th><th style="width:9%;">5</th></tr></thead>
-                                    <tbody>
-                                        <tr><td class="criteria-label">Problem Solving</td><td>${checkDot(emp.problemSolving, 1)}</td><td>${checkDot(emp.problemSolving, 2)}</td><td>${checkDot(emp.problemSolving, 3)}</td><td>${checkDot(emp.problemSolving, 4)}</td><td>${checkDot(emp.problemSolving, 5)}</td></tr>
-                                        <tr><td class="criteria-label">Building Relationship</td><td>${checkDot(emp.buildingRelationship, 1)}</td><td>${checkDot(emp.buildingRelationship, 2)}</td><td>${checkDot(emp.buildingRelationship, 3)}</td><td>${checkDot(emp.buildingRelationship, 4)}</td><td>${checkDot(emp.buildingRelationship, 5)}</td></tr>
-                                        <tr><td class="criteria-label">Team Collaboration</td><td>${checkDot(emp.teamCollaboration, 1)}</td><td>${checkDot(emp.teamCollaboration, 2)}</td><td>${checkDot(emp.teamCollaboration, 3)}</td><td>${checkDot(emp.teamCollaboration, 4)}</td><td>${checkDot(emp.teamCollaboration, 5)}</td></tr>
-                                        <tr><td class="criteria-label">Achieving Goals</td><td>${checkDot(emp.achievingGoals, 1)}</td><td>${checkDot(emp.achievingGoals, 2)}</td><td>${checkDot(emp.achievingGoals, 3)}</td><td>${checkDot(emp.achievingGoals, 4)}</td><td>${checkDot(emp.achievingGoals, 5)}</td></tr>
-                                        <tr><td class="criteria-label">Trustworthiness</td><td>${checkDot(emp.trustworthiness, 1)}</td><td>${checkDot(emp.trustworthiness, 2)}</td><td>${checkDot(emp.trustworthiness, 3)}</td><td>${checkDot(emp.trustworthiness, 4)}</td><td>${checkDot(emp.trustworthiness, 5)}</td></tr>
-                                        <tr><td class="criteria-label">Leading People</td><td>${checkDot(emp.leadingPeople, 1)}</td><td>${checkDot(emp.leadingPeople, 2)}</td><td>${checkDot(emp.leadingPeople, 3)}</td><td>${checkDot(emp.leadingPeople, 4)}</td><td>${checkDot(emp.leadingPeople, 5)}</td></tr>
-                                        <tr><td class="criteria-label">Customer Orientation</td><td>${checkDot(emp.customerOrientation, 1)}</td><td>${checkDot(emp.customerOrientation, 2)}</td><td>${checkDot(emp.customerOrientation, 3)}</td><td>${checkDot(emp.customerOrientation, 4)}</td><td>${checkDot(emp.customerOrientation, 5)}</td></tr>
-                                        <tr><td class="criteria-label">Business Savvy</td><td>${checkDot(emp.businessSavvy, 1)}</td><td>${checkDot(emp.businessSavvy, 2)}</td><td>${checkDot(emp.businessSavvy, 3)}</td><td>${checkDot(emp.businessSavvy, 4)}</td><td>${checkDot(emp.businessSavvy, 5)}</td></tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="card-section">
-                                <div class="section-bar-title">Human Asset Value</div>
-                                <div class="human-asset-container">
-                                    <div class="asset-scores">
-                                        <div>Performance: <span>${emp.humanAssetValuePerformance || '-'}</span></div>
-                                        <div>Potential: <span>${emp.humanAssetValuePotential || '-'}</span></div>
-                                        <div style="font-size:0.8rem; margin-top:4px;">Kuadran: <span style="font-weight:bold; background:#005a70; color:white; padding:2px 6px; border-radius:2px;">${emp.box9HavMatrix || '-'}</span></div>
-                                    </div>
-                                    <div class="mini-9box-grid">
-                                        <div class="mini-box ${targetBox === 'DEVELOPING' ? 'active-placement' : ''}" style="background:#ffd3b6;">Developing<span>(Perf:&lt;B, Pot:&ge;88%)</span></div>
-                                        <div class="mini-box ${targetBox === 'EMERGING STAR' && emp.humanAssetValuePotential === 'High' ? 'active-placement' : ''}" style="background:#dcedc1;">Emerging<span>(Perf:63-87%, Pot:&ge;88%)</span></div>
-                                        <div class="mini-box ${targetBox === 'STAR' ? 'active-placement' : ''}" style="background:#a8e6cf;">STAR<span>(Perf:&ge;2A, Pot:&ge;88%)</span></div>
-                                        <div class="mini-box ${targetBox === 'DEVELOPABLE' ? 'active-placement' : ''}" style="background:#ffaaa5;">Developable<span>(Perf:&lt;B, Pot:63-87%)</span></div>
-                                        <div class="mini-box ${targetBox === 'PROMISING' ? 'active-placement' : ''}" style="background:#a8dadc;">Promising<span>(Perf:63-87%, Pot:63-87%)</span></div>
-                                        <div class="mini-box ${targetBox === 'EMERGING STAR' && emp.humanAssetValuePotential === 'Medium' ? 'active-placement' : ''}" style="background:#ffeb3b;">Emerging STAR<span>(Perf:&ge;2A, Pot:63-87%)</span></div>
-                                        <div class="mini-box ${targetBox === 'INEFFECTIVE' ? 'active-placement' : ''}" style="background:#ff8b94;">Ineffective<span>(Perf:&lt;B, Pot:&lt;63%)</span></div>
-                                        <div class="mini-box ${targetBox === 'SOLID PERFORMER' ? 'active-placement' : ''}" style="background:#eff1f3;">Solid Performer<span>(Perf:&ge;B, Pot:&lt;63%)</span></div>
-                                        <div class="mini-box ${targetBox === 'HIGH PRODUCTIVE' ? 'active-placement' : ''}" style="background:#d1f2a5;">Highly Productive<span>(Perf:&ge;2A, Pot:&lt;63%)</span></div>
-                                    </div>
-                                </div>
+                            <div class="kpi-card" style="padding:15px;">
+                                <div class="kpi-data"><h3 id="miniKpiAvg">0.0</h3><p>Filtered Performance Avg</p></div>
                             </div>
                         </div>
                     </div>
                 </div>
-            `;
+            </div>
+
+            <!-- VIEWPORT 3: TALENT POOL CARD (UNDER DEV) -->
+            <div id="view-talentPool" class="module-viewport">
+                <div class="viewport-header"><h1>Talent Pool Registry</h1><p>Modul berikut sedang dalam fase konstruksi inkremental.</p></div>
+            </div>
+
+            <!-- VIEWPORT 4: 9-BOX MATRIX (UNDER DEV) -->
+            <div id="view-matrix9box" class="module-viewport">
+                <div class="viewport-header"><h1>Human Asset Value (9-Box Grid)</h1><p>Modul berikut sedang dalam fase konstruksi inkremental.</p></div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // KREDENSIAL AKSES TETAP PROTOTYPE
+        const USER_AUTH = { email: "admin@enterprise.co.id", pass: "HrisSuccess2026!" };
+        
+        // CSV EXPORT ENGINE MENGARAH LANGSUNG KE TAB SPESIFIK SPREADSHEET ANDA (gid=771256818)
+        const LINK_SPREADSHEET_CSV = "https://docs.google.com/spreadsheets/d/1GWqo70BBWotY1CVYk6E5L5QEyUnS9cWgVU0RBUL6D0A/export?format=csv&gid=771256818";
+
+        let MASTER_EMPLOYEE_DATA = [];
+        let filteredStateData = [];
+        let activeModuleView = "dashboard";
+
+        if (sessionStorage.getItem("enterprise_auth_state") === "validated") {
+            bypassLoginScreenLayout();
+        }
+
+        function executeAuthenticationRequest() {
+            const u = document.getElementById("username").value;
+            const p = document.getElementById("password").value;
+            const err = document.getElementById("login-error");
+            const spinner = document.getElementById("loadingStatus");
+
+            if (u === USER_AUTH.email && p === USER_AUTH.pass) {
+                err.style.display = "none";
+                spinner.style.display = "block";
+                sessionStorage.setItem("enterprise_auth_state", "validated");
+                fetchLiveDatabaseEngine();
+            } else {
+                err.style.display = "block";
+            }
+        }
+
+        function bypassLoginScreenLayout() {
+            document.getElementById("login-screen").style.display = "none";
+            document.getElementById("app-shell").style.display = "flex";
+            fetchLiveDatabaseEngine();
+        }
+
+        function executeLogoffProcedure() {
+            sessionStorage.removeItem("enterprise_auth_state");
+            location.reload();
+        }
+
+        async function fetchLiveDatabaseEngine() {
+            try {
+                const response = await fetch(LINK_SPREADSHEET_CSV);
+                const dataText = await response.text();
+                parseRawCsvToJSON(dataText);
+            } catch (err) {
+                console.error("Sinkronisasi gagal:", err);
+                alert("Gagal menarik data terupdate dari Google Sheets. Pastikan hak akses sheets diatur publik Viewer.");
+            }
+        }
+
+        function parseRawCsvToJSON(csvText) {
+            let rows = csvText.split(/\r?\n/);
+            if (rows.length === 0) return;
+
+            let headers = deconstructCsvLine(rows[0]);
+            MASTER_EMPLOYEE_DATA = [];
+
+            for (let i = 1; i < rows.length; i++) {
+                if (!rows[i].trim()) continue;
+                let cells = deconstructCsvLine(rows[i]);
+                let employee = {};
+
+                for (let j = 0; j < headers.length; j++) {
+                    let headKey = headers[j].trim();
+                    let cellVal = cells[j] ? cells[j].trim() : "";
+
+                    if (headKey === "Employee ID") employee.employeeId = cellVal;
+                    else if (headKey === "Nama") employee.nama = cellVal;
+                    else if (headKey === "Age") employee.age = cellVal;
+                    else if (headKey === "Gender") employee.gender = cellVal;
+                    else if (headKey === "Directorate") employee.directorate = cellVal;
+                    else if (headKey === "Division") employee.division = cellVal;
+                    else if (headKey === "Department") employee.department = cellVal;
+                    else if (headKey === "Level") employee.level = cellVal;
+                    else if (headKey === "Employee Position") employee.employeePosition = cellVal;
+                    else if (headKey === "BU/SU Head" || headKey === "BU Head") employee.buSuHead = cellVal;
+                    else if (headKey === "Level of Education") employee.levelOfEducation = cellVal;
+                    else if (headKey === "Education") employee.education = cellVal;
+                    else if (headKey === "Other Education") employee.otherEducation = cellVal;
+                    else if (headKey === "Professional Certification") employee.professionalCertification = cellVal;
+                    else if (headKey === "Tenure") employee.tenure = cellVal;
+                    else if (headKey === "Year to Retirement") employee.yearToRetirement = cellVal;
+                    else if (headKey === "Current Role") employee.currentRole = cellVal;
+                    else if (headKey === "Talent Aspiration") employee.talentAspiration = cellVal;
+                    else if (headKey === "Manager Comment") employee.managerComment = cellVal;
+                    else if (headKey === "Latest KPI 1") employee.latestKpi1 = cellVal;
+                    else if (headKey === "Perf 2024") employee.perf2024 = cellVal;
+                    else if (headKey === "Perf 2023") employee.perf2023 = cellVal;
+                    else if (headKey === "Perf 2022") employee.perf2022 = cellVal;
+                    else if (headKey === "Average Performance Score") employee.averagePerformanceScore = cellVal;
+                    else if (headKey === "Problem Solving") employee.problemSolving = parseInt(cellVal) || 0;
+                    else if (headKey === "Building Relationship") employee.buildingRelationship = parseInt(cellVal) || 0;
+                    else if (headKey === "Team Collaboration") employee.teamCollaboration = parseInt(cellVal) || 0;
+                    else if (headKey === "Achieving Goals") employee.achievingGoals = parseInt(cellVal) || 0;
+                    else if (headKey === "Trustworthiness") employee.trustworthiness = parseInt(cellVal) || 0;
+                    else if (headKey === "Leading People") employee.leadingPeople = parseInt(cellVal) || 0;
+                    else if (headKey === "Customer Orientation") employee.customerOrientation = parseInt(cellVal) || 0;
+                    else if (headKey === "Business Savvy") employee.businessSavvy = parseInt(cellVal) || 0;
+                    else if (headKey === "Human Asset Value - Performance") employee.havPerformance = cellVal;
+                    else if (headKey === "Human Asset Value - Potential") employee.havPotential = cellVal;
+                    else if (headKey === "9 Box HAV Matrix") employee.box9Matrix = cellVal;
+                }
+                if (employee.employeeId) MASTER_EMPLOYEE_DATA.push(employee);
+            }
+
+            filteredStateData = [...MASTER_EMPLOYEE_DATA];
+            initializeDynamicDropdownSelectors();
+            recomputeModuleVisualViewports();
+        }
+
+        function deconstructCsvLine(textLine) {
+            let splitCells = [];
+            let segment = '';
+            let toggleQuotes = false;
+            for (let i = 0; i < textLine.length; i++) {
+                let character = textLine[i];
+                if (character === '"') { toggleQuotes = !toggleQuotes; }
+                else if (character === ',' && !toggleQuotes) { splitCells.push(segment); segment = ''; }
+                else { segment += character; }
+            }
+            splitCells.push(segment);
+            return splitCells;
+        }
+
+        function initializeDynamicDropdownSelectors() {
+            const dirDropdown = document.getElementById("selDirectorate");
+            dirDropdown.innerHTML = '<option value="ALL">-- All Directorate --</option>';
+
+            const uniqueDirs = [...new Set(MASTER_EMPLOYEE_DATA.map(e => e.directorate).filter(Boolean))];
+            uniqueDirs.forEach(d => dirDropdown.innerHTML += `<option value="${d}">${d}</option>`);
+            handleDirectorateFilterChange();
+        }
+
+        function handleDirectorateFilterChange() {
+            const targetDir = document.getElementById("selDirectorate").value;
+            const divDropdown = document.getElementById("selDivision");
+            divDropdown.innerHTML = '<option value="ALL">-- All Division --</option>';
+
+            const poolSource = targetDir === "ALL" ? MASTER_EMPLOYEE_DATA : MASTER_EMPLOYEE_DATA.filter(e => e.directorate === targetDir);
+            const uniqueDivs = [...new Set(poolSource.map(e => e.division).filter(Boolean))];
+            
+            uniqueDivs.forEach(v => divDropdown.innerHTML += `<option value="${v}">${v}</option>`);
+            applyGlobalFiltersRecomputation();
+        }
+
+        function applyGlobalFiltersRecomputation() {
+            const fDir = document.getElementById("selDirectorate").value;
+            const fDiv = document.getElementById("selDivision").value;
+            const keyword = document.getElementById("inpSearch").value.toLowerCase().trim();
+
+            filteredStateData = MASTER_EMPLOYEE_DATA.filter(emp => {
+                const matchDir = (fDir === "ALL" || emp.directorate === fDir);
+                const matchDiv = (fDiv === "ALL" || emp.division === fDiv);
+                const matchTxt = !keyword || (emp.nama && emp.nama.toLowerCase().includes(keyword)) || (emp.employeeId && emp.employeeId.toString().includes(keyword));
+                return matchDir && matchDiv && matchTxt;
+            });
+
+            recomputeModuleVisualViewports();
+        }
+
+        function resetGlobalFiltersSystem() {
+            document.getElementById("selDirectorate").value = "ALL";
+            document.getElementById("inpSearch").value = "";
+            handleDirectorateFilterChange();
+        }
+
+        function switchActiveViewport(tabId) {
+            activeModuleView = tabId;
+            document.querySelectorAll(".nav-item-link").forEach(node => node.classList.remove("active"));
+            document.querySelectorAll(".module-viewport").forEach(view => view.classList.remove("active-view"));
+
+            document.getElementById(`tab-${tabId}`).classList.add("active");
+            document.getElementById(`view-${tabId}`).classList.add("active-view");
+            recomputeModuleVisualViewports();
+        }
+
+        function recomputeModuleVisualViewports() {
+            if (activeModuleView === "dashboard") renderExecutiveDashboardVisuals();
+            else if (activeModuleView === "organization") renderOrganizationalTreeModule();
+        }
+
+        function renderExecutiveDashboardVisuals() {
+            document.getElementById("kpiTotalEmp").innerText = filteredStateData.length;
+            const countDir = [...new Set(filteredStateData.map(e => e.directorate).filter(Boolean))].length;
+            const countDiv = [...new Set(filteredStateData.map(e => e.division).filter(Boolean))].length;
+            document.getElementById("kpiTotalDir").innerText = countDir;
+            document.getElementById("kpiTotalDiv").innerText = countDiv;
+
+            let totalScore = 0, validRows = 0;
+            filteredStateData.forEach(e => {
+                let score = parseFloat(e.averagePerformanceScore);
+                if (!isNaN(score)) { totalScore += score; validRows++; }
+            });
+            document.getElementById("kpiAvgPerf").innerText = validRows > 0 ? (totalScore / validRows).toFixed(1) : "0.0";
+
+            const tAnchor = document.getElementById("chartTalentClassAnchor");
+            tAnchor.innerHTML = "";
+            const targetSegments = ["STAR", "HIGH PERFORMER", "PROMISING", "SOLID PERFORMER", "DEVELOPING", "INEFFECTIVE"];
+            
+            targetSegments.forEach(segment => {
+                let matchCount = filteredStateData.filter(e => e.box9Matrix && e.box9Matrix.toUpperCase().trim() === segment).length;
+                let percentage = filteredStateData.length > 0 ? (matchCount / filteredStateData.length) * 100 : 0;
+                tAnchor.innerHTML += `
+                    <div class="bar-node">
+                        <div class="bar-label-info"><span>${segment}</span><span>${matchCount} Staff (${percentage.toFixed(0)}%)</span></div>
+                        <div class="bar-rail"><div class="bar-core-fill" style="width: ${percentage}%; background: var(--primary-color);"></div></div>
+                    </div>
+                `;
+            });
+
+            const hAnchor = document.getElementById("chartHavAnchor");
+            hAnchor.innerHTML = "";
+            const sampleHavGrids = ["High", "Medium", "Low"];
+            sampleHavGrids.forEach(g => {
+                let matchCount = filteredStateData.filter(e => e.havPerformance === g).length;
+                let percentage = filteredStateData.length > 0 ? (matchCount / filteredStateData.length) * 100 : 0;
+                hAnchor.innerHTML += `
+                    <div class="bar-node">
+                        <div class="bar-label-info"><span>Performance Level: ${g}</span><span>${matchCount} Karyawan (${percentage.toFixed(0)}%)</span></div>
+                        <div class="bar-rail"><div class="bar-core-fill" style="width: ${percentage}%; background: var(--secondary-teal);"></div></div>
+                    </div>
+                `;
+            });
+        }
+
+        // =========================================================================
+        // MODULE 2 ENGINE: DYNAMIC COGNITIVE ORGANIZATIONAL TREE GENERATOR         
+        // =========================================================================
+        function renderOrganizationalTreeModule() {
+            const anchor = document.getElementById("htmlTreeLiveAnchor");
+            anchor.innerHTML = "";
+
+            // Update Mini Dashboard Sisi Kanan
+            document.getElementById("miniKpiCount").innerText = filteredStateData.length;
+            let totalScore = 0, validRows = 0;
+            filteredStateData.forEach(e => {
+                let score = parseFloat(e.averagePerformanceScore);
+                if (!isNaN(score)) { totalScore += score; validRows++; }
+            });
+            document.getElementById("miniKpiAvg").innerText = validRows > 0 ? (totalScore / validRows).toFixed(1) : "0.0";
+
+            if (filteredStateData.length === 0) {
+                anchor.innerHTML = '<div class="no-data-msg" style="margin-top:20px;">No operational cluster matching active filters.</div>';
+                return;
+            }
+
+            // Grouping Hierarki: Directorate -> Division -> Employees (Department Level)
+            const treeMap = {};
+            filteredStateData.forEach(emp => {
+                let dir = emp.directorate || "Unassigned Directorate";
+                let div = emp.division || "Unassigned Division";
+                if (!treeMap[dir]) treeMap[dir] = {};
+                if (!treeMap[dir][div]) treeMap[dir][div] = [];
+                treeMap[dir][div].push(emp);
+            });
+
+            // Bangun elemen diagram kotak
+            for (const dirName in treeMap) {
+                let dirElement = document.createElement("div");
+                dirElement.className = "chart-tree-root";
+                dirElement.innerHTML = `
+                    <div class="tree-node-block dir-box">${dirName}</div>
+                    <div class="tree-branch-connector"></div>
+                `;
+
+                let divGrid = document.createElement("div");
+                divGrid.className = "tree-horizontal-grid";
+
+                for (const divName in treeMap[dirName]) {
+                    let divContainer = document.createElement("div");
+                    divContainer.style.display = "flex";
+                    divContainer.style.flexDirection = "column";
+                    divContainer.style.alignItems = "center";
+                    
+                    divContainer.innerHTML = `
+                        <div class="tree-node-block div-box">${divName}</div>
+                        <div class="tree-branch-connector"></div>
+                    `;
+
+                    let deptContainer = document.createElement("div");
+                    deptContainer.className = "dept-flex-row";
+
+                    treeMap[dirName][divName].forEach(emp => {
+                        let empBox = document.createElement("div");
+                        empBox.className = "tree-node-block dept-box";
+                        empBox.innerHTML = `
+                            <h4>${emp.nama}</h4>
+                            <p>${emp.employeePosition}</p>
+                            <p style="font-size: 0.68rem; color: var(--primary-color); font-weight:700; margin-top:4px;"><i class="fa-solid fa-id-badge"></i> ID: ${emp.employeeId}</p>
+                        `;
+                        deptContainer.appendChild(empBox);
+                    });
+
+                    divContainer.appendChild(deptContainer);
+                    divGrid.appendChild(divContainer);
+                }
+
+                dirElement.appendChild(divGrid);
+                anchor.appendChild(dirElement);
+                
+                // Tambah pemisah antar direktorat jika data berjumlah banyak
+                let spacing = document.createElement("div");
+                spacing.style.height = "30px";
+                anchor.appendChild(spacing);
+            }
         }
     </script>
 </body>
