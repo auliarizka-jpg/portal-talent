@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enterprise Talent Management System - Module 1 & 2 FIXED</title>
+    <title>Enterprise Talent Management System - Pro Smart Core</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -243,6 +243,8 @@
 
     <script>
         const USER_AUTH = { email: "admin@enterprise.co.id", pass: "HrisSuccess2026!" };
+        
+        // CSV EXPORT ENGINE SPESIFIK TAB AKURAT SPREADSHEET (gid=771256818)
         const LINK_SPREADSHEET_CSV = "https://docs.google.com/spreadsheets/d/1GWqo70BBWotY1CVYk6E5L5QEyUnS9cWgVU0RBUL6D0A/export?format=csv&gid=771256818";
 
         let MASTER_EMPLOYEE_DATA = [];
@@ -291,61 +293,103 @@
             }
         }
 
-        // AUTO-STRIP QUOTES CLEAN ENGINE PARSER
+        // SMART RE-CLEAN FUZZY MATCHING INTERPRETER CORE
         function parseRawCsvToJSON(csvText) {
             let rows = csvText.split(/\r?\n/);
             if (rows.length === 0) return;
 
-            // Membersihkan tanda kutip pengganggu pada header
-            let headers = deconstructCsvLine(rows[0]).map(h => h.replace(/^["']|["']$/g, '').trim());
+            // Bersihkan tanda kutip, hilangkan spasi depan-belakang, ubah huruf kecil semua untuk pencarian aman
+            let headers = deconstructCsvLine(rows[0]).map(h => h.replace(/^["']|["']$/g, '').trim().toLowerCase());
             MASTER_EMPLOYEE_DATA = [];
+
+            // Helper pencari indeks kolom berbasis nama (Fuzzy Case-Insensitive)
+            const findColumnIdx = (name) => headers.indexOf(name.toLowerCase().trim());
+
+            const idxId = findColumnIdx("Employee ID");
+            const idxNama = findColumnIdx("Nama");
+            const idxAge = findColumnIdx("Age");
+            const idxGender = findColumnIdx("Gender");
+            const idxDir = findColumnIdx("Directorate");
+            const idxDiv = findColumnIdx("Division");
+            const idxDept = findColumnIdx("Department");
+            const idxLevel = findColumnIdx("Level");
+            const idxPosition = findColumnIdx("Employee Position");
+            const idxHead = findColumnIdx("BU/SU Head");
+            const idxEduLevel = findColumnIdx("Level of Education");
+            const idxEduMajor = findColumnIdx("Education");
+            const idxOtherEdu = findColumnIdx("Other Education");
+            const idxCert = findColumnIdx("Professional Certification");
+            const idxTenure = findColumnIdx("Tenure");
+            const idxRetire = findColumnIdx("Year to Retirement");
+            const idxRole = findColumnIdx("Current Role");
+            const idxAsp = findColumnIdx("Talent Aspiration");
+            const idxComm = findColumnIdx("Manager Comment");
+            const idxKpi = findColumnIdx("Latest KPI 1");
+            const idxPerf24 = findColumnIdx("Perf 2024");
+            const idxPerf23 = findColumnIdx("Perf 2023");
+            const idxPerf22 = findColumnIdx("Perf 2022");
+            const idxAvgPerf = findColumnIdx("Average Performance Score");
+            
+            const idxProb = findColumnIdx("Problem Solving");
+            const idxRelat = findColumnIdx("Building Relationship");
+            const idxCollab = findColumnIdx("Team Collaboration");
+            const idxGoals = findColumnIdx("Achieving Goals");
+            const idxTrust = findColumnIdx("Trustworthiness");
+            const idxLead = findColumnIdx("Leading People");
+            const idxCust = findColumnIdx("Customer Orientation");
+            const idxBiz = findColumnIdx("Business Savvy");
+            
+            const idxHavPerf = findColumnIdx("Human Asset Value - Performance");
+            const idxHavPot = findColumnIdx("Human Asset Value - Potential");
+            const idxBox9 = findColumnIdx("9 Box HAV Matrix");
 
             for (let i = 1; i < rows.length; i++) {
                 if (!rows[i].trim()) continue;
                 let cells = deconstructCsvLine(rows[i]).map(c => c.replace(/^["']|["']$/g, '').trim());
-                let employee = {};
-
-                for (let j = 0; j < headers.length; j++) {
-                    let headKey = headers[j];
-                    let cellVal = cells[j] || "";
-
-                    if (headKey === "Employee ID") employee.employeeId = cellVal;
-                    else if (headKey === "Nama") employee.nama = cellVal;
-                    else if (headKey === "Age") employee.age = cellVal;
-                    else if (headKey === "Gender") employee.gender = cellVal;
-                    else if (headKey === "Directorate") employee.directorate = cellVal;
-                    else if (headKey === "Division") employee.division = cellVal;
-                    else if (headKey === "Department") employee.department = cellVal;
-                    else if (headKey === "Level") employee.level = cellVal;
-                    else if (headKey === "Employee Position") employee.employeePosition = cellVal;
-                    else if (headKey === "BU/SU Head" || headKey === "BU Head") employee.buSuHead = cellVal;
-                    else if (headKey === "Level of Education") employee.levelOfEducation = cellVal;
-                    else if (headKey === "Education") employee.education = cellVal;
-                    else if (headKey === "Other Education") employee.otherEducation = cellVal;
-                    else if (headKey === "Professional Certification") employee.professionalCertification = cellVal;
-                    else if (headKey === "Tenure") employee.tenure = cellVal;
-                    else if (headKey === "Year to Retirement") employee.yearToRetirement = cellVal;
-                    else if (headKey === "Current Role") employee.currentRole = cellVal;
-                    else if (headKey === "Talent Aspiration") employee.talentAspiration = cellVal;
-                    else if (headKey === "Manager Comment") employee.managerComment = cellVal;
-                    else if (headKey === "Latest KPI 1") employee.latestKpi1 = cellVal;
-                    else if (headKey === "Perf 2024") employee.perf2024 = cellVal;
-                    else if (headKey === "Perf 2023") employee.perf2023 = cellVal;
-                    else if (headKey === "Perf 2022") employee.perf2022 = cellVal;
-                    else if (headKey === "Average Performance Score") employee.averagePerformanceScore = cellVal;
-                    else if (headKey === "Problem Solving") employee.problemSolving = parseInt(cellVal) || 0;
-                    else if (headKey === "Building Relationship") employee.buildingRelationship = parseInt(cellVal) || 0;
-                    else if (headKey === "Team Collaboration") employee.teamCollaboration = parseInt(cellVal) || 0;
-                    else if (headKey === "Achieving Goals") employee.achievingGoals = parseInt(cellVal) || 0;
-                    else if (headKey === "Trustworthiness") employee.trustworthiness = parseInt(cellVal) || 0;
-                    else if (headKey === "Leading People") employee.leadingPeople = parseInt(cellVal) || 0;
-                    else if (headKey === "Customer Orientation") employee.customerOrientation = parseInt(cellVal) || 0;
-                    else if (headKey === "Business Savvy") employee.businessSavvy = parseInt(cellVal) || 0;
-                    else if (headKey === "Human Asset Value - Performance") employee.havPerformance = cellVal;
-                    else if (headKey === "Human Asset Value - Potential") employee.havPotential = cellVal;
-                    else if (headKey === "9 Box HAV Matrix") employee.box9Matrix = cellVal;
+                
+                // Pastikan baris memiliki data minimal ID Karyawan
+                if (idxId !== -1 && cells[idxId]) {
+                    let employee = {
+                        employeeId: cells[idxId],
+                        nama: idxNama !== -1 ? cells[idxNama] : "",
+                        age: idxAge !== -1 ? cells[idxAge] : "",
+                        gender: idxGender !== -1 ? cells[idxGender] : "",
+                        directorate: idxDir !== -1 ? cells[idxDir] : "",
+                        division: idxDiv !== -1 ? cells[idxDiv] : "",
+                        department: idxDept !== -1 ? cells[idxDept] : "",
+                        level: idxLevel !== -1 ? cells[idxLevel] : "",
+                        employeePosition: idxPosition !== -1 ? cells[idxPosition] : "",
+                        buSuHead: idxHead !== -1 ? cells[idxHead] : "",
+                        levelOfEducation: idxEduLevel !== -1 ? cells[idxEduLevel] : "",
+                        education: idxEduMajor !== -1 ? cells[idxEduMajor] : "",
+                        otherEducation: idxOtherEdu !== -1 ? cells[idxOtherEdu] : "",
+                        professionalCertification: idxCert !== -1 ? cells[idxCert] : "",
+                        tenure: idxTenure !== -1 ? cells[idxTenure] : "",
+                        yearToRetirement: idxRetire !== -1 ? cells[idxRetire] : "",
+                        currentRole: idxRole !== -1 ? cells[idxRole] : "",
+                        talentAspiration: idxAsp !== -1 ? cells[idxAsp] : "",
+                        managerComment: idxComm !== -1 ? cells[idxComm] : "",
+                        latestKpi1: idxKpi !== -1 ? cells[idxKpi] : "",
+                        perf2024: idxPerf24 !== -1 ? cells[idxPerf24] : "",
+                        perf2023: idxPerf23 !== -1 ? cells[idxPerf23] : "",
+                        perf2022: idxPerf22 !== -1 ? cells[idxPerf22] : "",
+                        averagePerformanceScore: idxAvgPerf !== -1 ? cells[idxAvgPerf] : "0.0",
+                        
+                        problemSolving: idxProb !== -1 ? parseInt(cells[idxProb]) || 0 : 0,
+                        buildingRelationship: idxRelat !== -1 ? parseInt(cells[idxRelat]) || 0 : 0,
+                        teamCollaboration: idxCollab !== -1 ? parseInt(cells[idxCollab]) || 0 : 0,
+                        achievingGoals: idxGoals !== -1 ? parseInt(cells[idxGoals]) || 0 : 0,
+                        trustworthiness: idxTrust !== -1 ? parseInt(cells[idxTrust]) || 0 : 0,
+                        leadingPeople: idxLead !== -1 ? parseInt(cells[idxLead]) || 0 : 0,
+                        customerOrientation: idxCust !== -1 ? parseInt(cells[idxCust]) || 0 : 0,
+                        businessSavvy: idxBiz !== -1 ? parseInt(cells[idxBiz]) || 0 : 0,
+                        
+                        havPerformance: idxHavPerf !== -1 ? cells[idxHavPerf] : "",
+                        havPotential: idxHavPot !== -1 ? cells[idxHavPot] : "",
+                        box9Matrix: idxBox9 !== -1 ? cells[idxBox9] : ""
+                    };
+                    MASTER_EMPLOYEE_DATA.push(employee);
                 }
-                if (employee.employeeId) MASTER_EMPLOYEE_DATA.push(employee);
             }
 
             filteredStateData = [...MASTER_EMPLOYEE_DATA];
