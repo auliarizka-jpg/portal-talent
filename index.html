@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enterprise Talent Management System - Module 1 & 2</title>
-    <!-- Font System -->
+    <title>Enterprise Talent Management System - Module 1 & 2 FIXED</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -94,31 +92,25 @@
         .bar-rail { width: 100%; height: 8px; background: #edf2f7; border-radius: 4px; overflow: hidden; }
         .bar-core-fill { height: 100%; border-radius: 4px; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
 
-        /* ========================================================================= */
-        /* MODUL 2: OPERATIONAL STRUCTURE CHART VIEW (MATCH IMAGE REFERENCE)          */
-        /* ========================================================================= */
-        .org-structure-layout-split { display: grid; grid-template-columns: 60% 40%; gap: 30px; align-items: start; }
-        .tree-viewport-card { background: var(--bg-card); padding: 30px; border-radius: 8px; border: 1px solid var(--border-color); box-shadow: 0 4px 10px rgba(0,0,0,0.02); min-height: 500px; display: flex; flex-direction: column; align-items: center; overflow-x: auto; }
+        /* MODUL 2: OPERATIONAL STRUCTURE CHART VIEW */
+        .org-structure-layout-split { display: grid; grid-template-columns: 65% 35%; gap: 30px; align-items: start; }
+        .tree-viewport-card { background: var(--bg-card); padding: 30px; border-radius: 8px; border: 1px solid var(--border-color); box-shadow: 0 4px 10px rgba(0,0,0,0.02); min-height: 500px; display: flex; flex-direction: column; align-items: center; overflow-x: auto; width: 100%; }
         
-        /* Bagan Diagram Kotak CSS Tree */
         .chart-tree-root { display: flex; flex-direction: column; align-items: center; width: 100%; }
         .tree-node-block { background: var(--primary-dark); color: white; padding: 12px 24px; border-radius: 6px; font-weight: 700; font-size: 0.95rem; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); letter-spacing: 0.5px; min-width: 180px; }
-        .tree-node-block.dir-box { background: #eef5f6; color: var(--primary-color); border: 2px solid var(--primary-color); }
-        .tree-node-block.div-box { background: var(--primary-color); color: white; min-width: 200px; }
-        .tree-node-block.dept-box { background: white; color: var(--text-main); border: 1px solid var(--border-color); border-top: 4px solid var(--secondary-teal); box-shadow: 0 2px 5px rgba(0,0,0,0.05); min-width: 160px; text-align: left; padding: 10px 14px; }
-        .tree-node-block.dept-box h4 { font-size: 0.85rem; font-weight: 700; color: var(--primary-dark); }
-        .tree-node-block.dept-box p { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; font-weight: 500; }
+        .tree-node-block.dir-box { background: #eef5f6; color: var(--primary-color); border: 2px solid var(--primary-color); text-transform: uppercase; }
+        .tree-node-block.div-box { background: var(--primary-color); color: white; min-width: 200px; text-transform: uppercase; }
+        .tree-node-block.dept-box { background: white; color: var(--text-main); border: 1px solid var(--border-color); border-top: 4px solid var(--secondary-teal); box-shadow: 0 2px 5px rgba(0,0,0,0.05); min-width: 220px; text-align: left; padding: 12px 14px; border-radius: 4px; }
+        .tree-node-block.dept-box h4 { font-size: 0.88rem; font-weight: 700; color: var(--primary-dark); }
+        .tree-node-block.dept-box p { font-size: 0.78rem; color: var(--text-muted); margin-top: 3px; font-weight: 500; }
         
-        .tree-branch-connector { width: 2px; height: 24px; background-color: var(--text-muted); }
-        .tree-horizontal-grid { display: flex; justify-content: center; gap: 20px; width: 100%; position: relative; }
-        
-        /* Sub-Department Lists Alignments */
-        .dept-flex-row { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-top: 10px; width: 100%; }
+        .tree-branch-connector { width: 2px; height: 24px; background-color: #cbd5e1; }
+        .tree-horizontal-grid { display: flex; justify-content: center; gap: 25px; width: 100%; position: relative; margin-top: 5px; }
+        .dept-flex-row { display: flex; flex-direction: column; gap: 12px; justify-content: center; width: 100%; align-items: center; }
     </style>
 </head>
 <body>
 
-    <!-- SECURE GATEWAY SCREEN -->
     <div id="login-screen">
         <div class="login-card">
             <i class="fa-solid fa-shield-halved main-lock"></i>
@@ -135,10 +127,8 @@
         </div>
     </div>
 
-    <!-- CORE ARCHITECTURE SHELL -->
     <div id="app-shell" style="display: none; width: 100%;">
         
-        <!-- SIDEBAR NAVIGATION PANEL -->
         <div class="enterprise-sidebar">
             <div class="brand-header">
                 <i class="fa-solid fa-cubes-stacked"></i>
@@ -156,10 +146,8 @@
             </div>
         </div>
 
-        <!-- MAIN WORKSPACE VIEWPORT CONTAINER -->
         <div class="workspace-content">
             
-            <!-- GLOBAL DYNAMIC FILTER MATRIX BAR -->
             <div class="filter-panel-card">
                 <div class="filter-node">
                     <label>Directorate</label>
@@ -176,7 +164,6 @@
                 <button class="btn-reset-filter" onclick="resetGlobalFiltersSystem()">Reset Filter</button>
             </div>
 
-            <!-- VIEWPORT 1: EXECUTIVE DASHBOARD -->
             <div id="view-dashboard" class="module-viewport active-view">
                 <div class="viewport-header">
                     <h1>Workforce Analytics Dashboard</h1>
@@ -214,7 +201,6 @@
                 </div>
             </div>
 
-            <!-- VIEWPORT 2: ORGANIZATION STRUCTURE TREE (LIVE SYNC MAPPED) -->
             <div id="view-organization" class="module-viewport">
                 <div class="viewport-header">
                     <h1>Workforce Analytics & Organization Structure Explorer</h1>
@@ -222,18 +208,14 @@
                 </div>
                 
                 <div class="org-structure-layout-split">
-                    <!-- Sisi Kiri: Bagan Pohon Struktur -->
                     <div class="tree-viewport-card">
                         <div class="chart-tree-root">
                             <div class="tree-node-block">ORGANIZATION</div>
                             <div class="tree-branch-connector"></div>
-                            
-                            <!-- Wadah Tempat Suntikan Struktur Cabang via JS -->
                             <div id="htmlTreeLiveAnchor" style="width:100%; display:flex; flex-direction:column; align-items:center;"></div>
                         </div>
                     </div>
                     
-                    <!-- Sisi Kanan: Panel Summary Stats Mini -->
                     <div class="chart-visual-card" style="margin-bottom:0;">
                         <h3>HR Mini Dashboard (Filtered)</h3>
                         <div class="dashboard-kpi-grid" style="grid-template-columns: 1fr; gap:15px; margin-bottom:0;">
@@ -248,12 +230,10 @@
                 </div>
             </div>
 
-            <!-- VIEWPORT 3: TALENT POOL CARD (UNDER DEV) -->
             <div id="view-talentPool" class="module-viewport">
                 <div class="viewport-header"><h1>Talent Pool Registry</h1><p>Modul berikut sedang dalam fase konstruksi inkremental.</p></div>
             </div>
 
-            <!-- VIEWPORT 4: 9-BOX MATRIX (UNDER DEV) -->
             <div id="view-matrix9box" class="module-viewport">
                 <div class="viewport-header"><h1>Human Asset Value (9-Box Grid)</h1><p>Modul berikut sedang dalam fase konstruksi inkremental.</p></div>
             </div>
@@ -262,10 +242,7 @@
     </div>
 
     <script>
-        // KREDENSIAL AKSES TETAP PROTOTYPE
         const USER_AUTH = { email: "admin@enterprise.co.id", pass: "HrisSuccess2026!" };
-        
-        // CSV EXPORT ENGINE MENGARAH LANGSUNG KE TAB SPESIFIK SPREADSHEET ANDA (gid=771256818)
         const LINK_SPREADSHEET_CSV = "https://docs.google.com/spreadsheets/d/1GWqo70BBWotY1CVYk6E5L5QEyUnS9cWgVU0RBUL6D0A/export?format=csv&gid=771256818";
 
         let MASTER_EMPLOYEE_DATA = [];
@@ -314,21 +291,23 @@
             }
         }
 
+        // AUTO-STRIP QUOTES CLEAN ENGINE PARSER
         function parseRawCsvToJSON(csvText) {
             let rows = csvText.split(/\r?\n/);
             if (rows.length === 0) return;
 
-            let headers = deconstructCsvLine(rows[0]);
+            // Membersihkan tanda kutip pengganggu pada header
+            let headers = deconstructCsvLine(rows[0]).map(h => h.replace(/^["']|["']$/g, '').trim());
             MASTER_EMPLOYEE_DATA = [];
 
             for (let i = 1; i < rows.length; i++) {
                 if (!rows[i].trim()) continue;
-                let cells = deconstructCsvLine(rows[i]);
+                let cells = deconstructCsvLine(rows[i]).map(c => c.replace(/^["']|["']$/g, '').trim());
                 let employee = {};
 
                 for (let j = 0; j < headers.length; j++) {
-                    let headKey = headers[j].trim();
-                    let cellVal = cells[j] ? cells[j].trim() : "";
+                    let headKey = headers[j];
+                    let cellVal = cells[j] || "";
 
                     if (headKey === "Employee ID") employee.employeeId = cellVal;
                     else if (headKey === "Nama") employee.nama = cellVal;
@@ -489,14 +468,10 @@
             });
         }
 
-        // =========================================================================
-        // MODULE 2 ENGINE: DYNAMIC COGNITIVE ORGANIZATIONAL TREE GENERATOR         
-        // =========================================================================
         function renderOrganizationalTreeModule() {
             const anchor = document.getElementById("htmlTreeLiveAnchor");
             anchor.innerHTML = "";
 
-            // Update Mini Dashboard Sisi Kanan
             document.getElementById("miniKpiCount").innerText = filteredStateData.length;
             let totalScore = 0, validRows = 0;
             filteredStateData.forEach(e => {
@@ -510,7 +485,6 @@
                 return;
             }
 
-            // Grouping Hierarki: Directorate -> Division -> Employees (Department Level)
             const treeMap = {};
             filteredStateData.forEach(emp => {
                 let dir = emp.directorate || "Unassigned Directorate";
@@ -520,7 +494,6 @@
                 treeMap[dir][div].push(emp);
             });
 
-            // Bangun elemen diagram kotak
             for (const dirName in treeMap) {
                 let dirElement = document.createElement("div");
                 dirElement.className = "chart-tree-root";
@@ -564,7 +537,6 @@
                 dirElement.appendChild(divGrid);
                 anchor.appendChild(dirElement);
                 
-                // Tambah pemisah antar direktorat jika data berjumlah banyak
                 let spacing = document.createElement("div");
                 spacing.style.height = "30px";
                 anchor.appendChild(spacing);
