@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enterprise Talent Management System - Pro Smart Core</title>
+    <title>Enterprise Talent Management System - Live Data Fixed</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -244,8 +244,8 @@
     <script>
         const USER_AUTH = { email: "admin@enterprise.co.id", pass: "HrisSuccess2026!" };
         
-        // CSV EXPORT ENGINE SPESIFIK TAB AKURAT SPREADSHEET (gid=771256818)
-        const LINK_SPREADSHEET_CSV = "https://docs.google.com/spreadsheets/d/1GWqo70BBWotY1CVYk6E5L5QEyUnS9cWgVU0RBUL6D0A/export?format=csv&gid=771256818";
+        // FORMAT EXPORT LIVE DATA ANTI-BLOCK GOOGLE SPREADSHEET 
+        const LINK_SPREADSHEET_CSV = "https://docs.google.com/spreadsheets/d/1GWqo70BBWotY1CVYk6E5L5QEyUnS9cWgVU0RBUL6D0A/pub?output=csv&gid=771256818";
 
         let MASTER_EMPLOYEE_DATA = [];
         let filteredStateData = [];
@@ -293,16 +293,13 @@
             }
         }
 
-        // SMART RE-CLEAN FUZZY MATCHING INTERPRETER CORE
         function parseRawCsvToJSON(csvText) {
             let rows = csvText.split(/\r?\n/);
             if (rows.length === 0) return;
 
-            // Bersihkan tanda kutip, hilangkan spasi depan-belakang, ubah huruf kecil semua untuk pencarian aman
             let headers = deconstructCsvLine(rows[0]).map(h => h.replace(/^["']|["']$/g, '').trim().toLowerCase());
             MASTER_EMPLOYEE_DATA = [];
 
-            // Helper pencari indeks kolom berbasis nama (Fuzzy Case-Insensitive)
             const findColumnIdx = (name) => headers.indexOf(name.toLowerCase().trim());
 
             const idxId = findColumnIdx("Employee ID");
@@ -347,7 +344,6 @@
                 if (!rows[i].trim()) continue;
                 let cells = deconstructCsvLine(rows[i]).map(c => c.replace(/^["']|["']$/g, '').trim());
                 
-                // Pastikan baris memiliki data minimal ID Karyawan
                 if (idxId !== -1 && cells[idxId]) {
                     let employee = {
                         employeeId: cells[idxId],
