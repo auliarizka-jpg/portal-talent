@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enterprise Talent Management System - Smart Split Core</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght=300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Enterprise Talent Management System - Row Skipper Engine</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -28,7 +28,7 @@
         .login-card h2 { font-size: 1.6rem; color: var(--primary-dark); font-weight: 700; margin-bottom: 6px; }
         .login-card p { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 25px; }
         .input-control { width: 100%; padding: 12px 16px; margin-bottom: 15px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.95rem; outline: none; }
-        .btn-submit-auth { width: 100%; padding: 12px; background: var(--primary-color); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; }
+        .btn-submit-auth { width: 100%; padding: 12px; background: var(--primary-color); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; width: 100%; }
         
         .error-message { color: #e76f51; font-size: 0.85rem; margin-top: 12px; display: none; font-weight: 600; text-align: left; background: #ffebe7; padding: 10px; border-radius: 4px; border-left: 4px solid #e76f51; }
         .sync-spinner { display: none; margin-top: 15px; font-size: 0.9rem; font-weight: 600; color: var(--primary-color); }
@@ -86,7 +86,6 @@
 </head>
 <body>
 
-    <!-- SECURITY GATEWAY -->
     <div id="login-screen">
         <div class="login-card">
             <i class="fa-solid fa-shield-halved main-lock"></i>
@@ -103,7 +102,6 @@
         </div>
     </div>
 
-    <!-- MAIN SHELL -->
     <div id="app-shell" style="display: none; width: 100%;">
         <div class="enterprise-sidebar">
             <div class="brand-header"><i class="fa-solid fa-cubes-stacked"></i> <span>Talent Intelligence</span></div>
@@ -118,7 +116,6 @@
         </div>
 
         <div class="workspace-content">
-            <!-- FILTER PANEL -->
             <div class="filter-panel-card">
                 <div class="filter-node">
                     <label>Directorate</label>
@@ -135,7 +132,6 @@
                 <button class="btn-reset-filter" onclick="resetGlobalFiltersSystem()">Reset</button>
             </div>
 
-            <!-- DASHBOARD MODULE -->
             <div id="view-dashboard" class="module-viewport active-view">
                 <div class="viewport-header"><h1>Workforce Analytics Dashboard</h1></div>
                 <div class="dashboard-kpi-grid">
@@ -150,7 +146,6 @@
                 </div>
             </div>
 
-            <!-- ORG STRUCTURE TREE MODULE -->
             <div id="view-organization" class="module-viewport">
                 <div class="viewport-header"><h1>Organization Structure Explorer</h1></div>
                 <div class="org-structure-layout-split">
@@ -231,71 +226,58 @@
             }
         }
 
-        // FUZZY STRING RE-CONSTRUCT INTEGRATED ENGINE
+        // SMART DETECTOR ENGINE FOR SKIPPING BLANK ROWS AND FINDING VALID HEADERS
         function parseRawCsvToJSON(csvText) {
-            let rows = csvText.split(/\r?\n/).filter(row => row.trim() !== "");
-            if (rows.length === 0) return;
+            let rawRows = csvText.split(/\r?\n/).map(r => r.trim()).filter(r => r !== "");
+            if (rawRows.length === 0) return;
 
-            let delimiter = rows[0].includes(";") ? ";" : ",";
+            let delimiter = rawRows[0].includes(";") ? ";" : ",";
             
-            // Satukan baris pertama lalu bersihkan untuk pencarian kata kunci fleksibel (.includes)
-            let headerLineClean = rows[0].replace(/["']/g, '').trim().toLowerCase();
+            // Mencari baris riil yang memuat Header Utama
+            let headerRowIndex = 0;
+            let headers = [];
             
-            MASTER_EMPLOYEE_DATA = [];
-
-            // Algoritma Pemetaan Indeks Berdasarkan Deteksi Sub-string Aman (Anti Kolom Dempet)
-            let rawHeadersArray = deconstructCsvLine(rows[0], delimiter).map(h => h.replace(/["']/g, '').trim().toLowerCase());
-            
-            const findFlexibleIdx = (keyword) => {
-                // Cari kecocokan murni dulu
-                let directIdx = rawHeadersArray.indexOf(keyword.toLowerCase());
-                if (directIdx !== -1) return directIdx;
-                
-                // Jika dempet, cari potongan teks terdekat
-                for (let k = 0; i < rawHeadersArray.length; k++) {
-                    if (rawHeadersArray[k].includes(keyword.toLowerCase())) return k;
+            for (let i = 0; i < rawRows.length; i++) {
+                let tempHeaders = deconstructCsvLine(rawRows[i], delimiter).map(h => h.replace(/["']/g, '').trim().toLowerCase());
+                if (tempHeaders.includes("employee id") || tempHeaders.includes("nama")) {
+                    headerRowIndex = i;
+                    headers = tempHeaders;
+                    break;
                 }
-                return -1;
-            };
+            }
 
-            // COGNITIVE MAPPING SESUAI STRUKTUR DUMP TEXT ANDA
-            const idxId = rawHeadersArray.findIndex(h => h.includes("employee id"));
-            const idxNama = rawHeadersArray.findIndex(h => h.includes("nama"));
-            const idxDir = rawHeadersArray.findIndex(h => h.includes("directorate"));
-            const idxDiv = rawHeadersArray.findIndex(h => h.includes("division"));
-            const idxPosition = rawHeadersArray.findIndex(h => h.includes("employee position"));
-            const idxAvgPerf = rawHeadersArray.findIndex(h => h.includes("average performance"));
-            const idxHavPerf = rawHeadersArray.findIndex(h => h.includes("human asset value - performance"));
-            const idxBox9 = rawHeadersArray.findIndex(h => h.includes("9 box hav matrix"));
+            if (headers.length === 0) {
+                alert("PERINGATAN: Tidak berhasil menemukan baris Header di Google Sheets Anda!");
+                return;
+            }
 
-            // JALUR PENYELAMAT DARURAT: Jika pemisah gagal total, tebak posisi berdasarkan urutan teks dump Anda
-            let useFallbackMapping = (idxNama === -1);
-            
-            for (let i = 1; i < rows.length; i++) {
-                let cells = deconstructCsvLine(rows[i], delimiter).map(c => c.replace(/["']/g, '').trim());
+            MASTER_EMPLOYEE_DATA = [];
+            const findColumnIdx = (name) => headers.indexOf(name.toLowerCase().trim());
+
+            const idxId = findColumnIdx("employee id");
+            const idxNama = findColumnIdx("nama");
+            const idxDir = findColumnIdx("directorate");
+            const idxDiv = findColumnIdx("division");
+            const idxPosition = findColumnIdx("employee position");
+            const idxAvgPerf = findColumnIdx("average performance");
+            const idxHavPerf = findColumnIdx("human asset value - performance");
+            const idxBox9 = findColumnIdx("9 box hav matrix");
+
+            // Membaca data karyawan mulai dari baris setelah Header ditemukan
+            for (let i = headerRowIndex + 1; i < rawRows.length; i++) {
+                let cells = deconstructCsvLine(rawRows[i], delimiter).map(c => c.replace(/["']/g, '').trim());
                 
-                if (cells.length > 0) {
-                    let empName = useFallbackMapping ? cells[2] : cells[idxNama];
-                    let empId = useFallbackMapping ? cells[1] : cells[idxId];
-                    let empDir = useFallbackMapping ? cells[14] : cells[idxDir];
-                    let empDiv = useFallbackMapping ? cells[15] : cells[idxDiv];
-                    let empPos = useFallbackMapping ? cells[23] : cells[idxPosition];
-                    let empAvg = useFallbackMapping ? cells[43] : cells[idxAvgPerf];
-                    let empHav = useFallbackMapping ? cells[56] : cells[idxHavPerf];
-                    let empBox = useFallbackMapping ? cells[52] : cells[idxBox9];
-
-                    if (empName) {
-                        MASTER_EMPLOYEE_DATA.push({
-                            employeeId: empId || "N/A",
-                            nama: empName,
-                            directorate: empDir || "Unassigned Directorate",
-                            division: empDiv || "Unassigned Division",
-                            employeePosition: empPos || "Staff",
-                            averagePerformanceScore: empAvg || "0.0",
-                            havPerformance: empHav || "Medium",
-                            box9Matrix: empBox || "SOLID PERFORMER"
-                        });
-                    }
+                if (cells.length > 0 && cells[idxNama !== -1 ? idxNama : 2]) {
+                    MASTER_EMPLOYEE_DATA.push({
+                        employeeId: idxId !== -1 ? cells[idxId] : "N/A",
+                        nama: idxNama !== -1 ? cells[idxNama] : "Unknown",
+                        directorate: (idxDir !== -1 && cells[idxDir]) ? cells[idxDir] : "Unassigned Directorate",
+                        division: (idxDiv !== -1 && cells[idxDiv]) ? cells[idxDiv] : "Unassigned Division",
+                        employeePosition: idxPosition !== -1 ? cells[idxPosition] : "Staff",
+                        averagePerformanceScore: idxAvgPerf !== -1 ? cells[idxAvgPerf] : "0.0",
+                        havPerformance: idxHavPerf !== -1 ? cells[idxHavPerf] : "Low",
+                        box9Matrix: idxBox9 !== -1 ? cells[idxBox9] : "SOLID PERFORMER"
+                    });
                 }
             }
 
