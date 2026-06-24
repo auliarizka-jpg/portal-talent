@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enterprise Talent Management System - Live Data Fixed</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Enterprise Talent Management System - Auto-Fix CSV</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght=300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -16,97 +16,72 @@
             --text-main: #2b2d42;
             --text-muted: #6c757d;
             --border-color: #e2e8f0;
-            
-            /* Status Talent Mapping Colors */
-            --tag-star: #2a9d8f;
-            --tag-high: #0077b6;
-            --tag-promising: #e9c46a;
-            --tag-solid: #4a5568;
-            --tag-developing: #f4a261;
-            --tag-ineffective: #e76f51;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
         body { background-color: var(--bg-workspace); color: var(--text-main); min-height: 100vh; display: flex; overflow-x: hidden; }
 
-        /* SECURITY ACCESS GATEWAY SCREEN */
+        /* GATEWAY ACCESS SCREEN */
         #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%); display: flex; justify-content: center; align-items: center; z-index: 99999; }
         .login-card { background: var(--bg-card); padding: 45px; border-radius: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.25); width: 100%; max-width: 420px; text-align: center; }
         .login-card i.main-lock { font-size: 3.5rem; color: var(--primary-color); margin-bottom: 15px; }
         .login-card h2 { font-size: 1.6rem; color: var(--primary-dark); font-weight: 700; margin-bottom: 6px; }
         .login-card p { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 25px; }
-        .input-control { width: 100%; padding: 12px 16px; margin-bottom: 15px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.95rem; outline: none; transition: border 0.2s; }
-        .input-control:focus { border-color: var(--primary-color); }
-        .btn-submit-auth { width: 100%; padding: 12px; background: var(--primary-color); color: white; border: none; border-radius: 6px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: background 0.2s; }
-        .btn-submit-auth:hover { background: var(--secondary-teal); }
-        .error-message { color: var(--tag-ineffective); font-size: 0.85rem; margin-top: 12px; display: none; font-weight: 600; }
+        .input-control { width: 100%; padding: 12px 16px; margin-bottom: 15px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.95rem; outline: none; }
+        .btn-submit-auth { width: 100%; padding: 12px; background: var(--primary-color); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; }
+        
+        .error-message { color: #e76f51; font-size: 0.85rem; margin-top: 12px; display: none; font-weight: 600; text-align: left; background: #ffebe7; padding: 10px; border-radius: 4px; border-left: 4px solid #e76f51; }
         .sync-spinner { display: none; margin-top: 15px; font-size: 0.9rem; font-weight: 600; color: var(--primary-color); }
         .sync-spinner i { animation: spin 1s linear infinite; margin-right: 6px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* ENTERPRISE APP SIDEBAR NAVIGATION */
-        .enterprise-sidebar { width: 260px; background: var(--primary-dark); color: white; position: fixed; top: 0; left: 0; height: 100vh; display: flex; flex-direction: column; z-index: 1000; box-shadow: 4px 0 15px rgba(0,0,0,0.05); }
-        .brand-header { padding: 25px 24px; font-size: 1.15rem; font-weight: 700; border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; align-items: center; gap: 12px; letter-spacing: 0.5px; }
-        .brand-header i { color: #cbd5e1; }
+        /* APPLICATION SHELL */
+        .enterprise-sidebar { width: 260px; background: var(--primary-dark); color: white; position: fixed; top: 0; left: 0; height: 100vh; display: flex; flex-direction: column; z-index: 1000; }
+        .brand-header { padding: 25px 24px; font-size: 1.15rem; font-weight: 700; border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; align-items: center; gap: 12px; }
         .nav-menu-list { list-style: none; padding: 20px 0; flex: 1; }
-        .nav-item-link { padding: 14px 24px; cursor: pointer; display: flex; align-items: center; gap: 14px; font-size: 0.95rem; color: #94a3b8; font-weight: 500; transition: all 0.2s; border-left: 4px solid transparent; }
-        .nav-item-link:hover, .nav-item-link.active { background: rgba(255,255,255,0.04); color: white; border-left-color: var(--secondary-teal); }
-        .nav-item-link i { width: 20px; font-size: 1.1rem; text-align: center; }
+        .nav-item-link { padding: 14px 24px; cursor: pointer; display: flex; align-items: center; gap: 14px; font-size: 0.95rem; color: #94a3b8; border-left: 4px solid transparent; }
+        .nav-item-link.active { background: rgba(255,255,255,0.04); color: white; border-left-color: var(--secondary-teal); }
         .user-profile-widget { padding: 20px; border-top: 1px solid rgba(255,255,255,0.06); display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: #94a3b8; }
-        .btn-logoff { cursor: pointer; font-size: 1.1rem; }
-        .btn-logoff:hover { color: #f87171; }
-
-        /* MAIN WORKSPACE ARCHITECTURE */
+        
         .workspace-content { margin-left: 260px; padding: 35px; width: calc(100% - 260px); min-height: 100vh; }
-        .module-viewport { display: none; animation: fadeIn 0.3s ease-in-out; }
+        .module-viewport { display: none; }
         .module-viewport.active-view { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* RE-RENDER FILTER PANEL */
-        .filter-panel-card { background: var(--primary-color); color: white; padding: 20px; border-radius: 8px; margin-bottom: 30px; display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .filter-node { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 180px; }
-        .filter-node label { font-size: 0.75rem; font-weight: 700; color: #cbd5e1; text-transform: uppercase; letter-spacing: 0.5px; }
-        .filter-node select, .filter-node input { padding: 10px 12px; border-radius: 6px; border: none; font-size: 0.85rem; font-weight: 600; background: white; color: #333; outline: none; }
-        .btn-reset-filter { padding: 10px 20px; background: var(--secondary-teal); color: white; border: none; border-radius: 6px; font-weight: 600; height: 38px; cursor: pointer; font-size: 0.85rem; }
+        /* CONTROLS */
+        .filter-panel-card { background: var(--primary-color); color: white; padding: 20px; border-radius: 8px; margin-bottom: 30px; display: flex; gap: 15px; align-items: flex-end; }
+        .filter-node { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+        .filter-node label { font-size: 0.75rem; font-weight: 700; color: #cbd5e1; text-transform: uppercase; }
+        .filter-node select, .filter-node input { padding: 10px 12px; border-radius: 6px; border: none; font-size: 0.85rem; width: 100%; }
+        .btn-reset-filter { padding: 10px 20px; background: var(--secondary-teal); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; height: 38px; }
 
-        /* MODULE SECTION HEADER */
         .viewport-header { margin-bottom: 25px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; }
-        .viewport-header h1 { font-size: 1.5rem; color: var(--primary-dark); font-weight: 700; }
-        .viewport-header p { font-size: 0.85rem; color: var(--text-muted); margin-top: 4px; }
-
-        /* DASHBOARD METRICS CARDS GRID */
-        .dashboard-kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 25px; margin-bottom: 35px; }
-        .kpi-card { background: var(--bg-card); padding: 24px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; }
+        .viewport-header h1 { font-size: 1.5rem; color: var(--primary-dark); }
+        
+        .dashboard-kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 25px; margin-bottom: 35px; }
+        .kpi-card { background: var(--bg-card); padding: 24px; border-radius: 8px; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; }
         .kpi-data h3 { font-size: 2rem; font-weight: 700; color: var(--primary-dark); }
-        .kpi-data p { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
-        .kpi-icon-wrapper { width: 50px; height: 50px; border-radius: 8px; background: #f0f5f7; color: var(--primary-color); display: flex; align-items: center; justify-content: center; font-size: 1.3rem; }
+        .kpi-data p { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
 
-        /* ANALYTICS CHARTS GRID LAYOUT */
         .analytics-charts-container { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-        .chart-visual-card { background: var(--bg-card); border-radius: 8px; border: 1px solid var(--border-color); padding: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        .chart-visual-card h3 { font-size: 0.9rem; font-weight: 700; color: var(--primary-dark); border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .chart-visual-card { background: var(--bg-card); border-radius: 8px; border: 1px solid var(--border-color); padding: 25px; }
+        .chart-visual-card h3 { font-size: 0.9rem; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; }
         
         .distribution-chart-stack { display: flex; flex-direction: column; gap: 16px; }
         .bar-node { display: flex; flex-direction: column; gap: 6px; }
         .bar-label-info { display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 600; }
-        .bar-rail { width: 100%; height: 8px; background: #edf2f7; border-radius: 4px; overflow: hidden; }
-        .bar-core-fill { height: 100%; border-radius: 4px; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+        .bar-rail { width: 100%; height: 8px; background: #edf2f7; border-radius: 4px; }
+        .bar-core-fill { height: 100%; border-radius: 4px; background: var(--primary-color); width: 0%; transition: width 0.5s; }
 
-        /* MODUL 2: OPERATIONAL STRUCTURE CHART VIEW */
-        .org-structure-layout-split { display: grid; grid-template-columns: 65% 35%; gap: 30px; align-items: start; }
-        .tree-viewport-card { background: var(--bg-card); padding: 30px; border-radius: 8px; border: 1px solid var(--border-color); box-shadow: 0 4px 10px rgba(0,0,0,0.02); min-height: 500px; display: flex; flex-direction: column; align-items: center; overflow-x: auto; width: 100%; }
-        
+        /* TREE VIEW */
+        .org-structure-layout-split { display: grid; grid-template-columns: 65% 35%; gap: 30px; }
+        .tree-viewport-card { background: var(--bg-card); padding: 30px; border-radius: 8px; border: 1px solid var(--border-color); min-height: 500px; display: flex; flex-direction: column; align-items: center; overflow-x: auto; }
         .chart-tree-root { display: flex; flex-direction: column; align-items: center; width: 100%; }
-        .tree-node-block { background: var(--primary-dark); color: white; padding: 12px 24px; border-radius: 6px; font-weight: 700; font-size: 0.95rem; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); letter-spacing: 0.5px; min-width: 180px; }
-        .tree-node-block.dir-box { background: #eef5f6; color: var(--primary-color); border: 2px solid var(--primary-color); text-transform: uppercase; }
-        .tree-node-block.div-box { background: var(--primary-color); color: white; min-width: 200px; text-transform: uppercase; }
-        .tree-node-block.dept-box { background: white; color: var(--text-main); border: 1px solid var(--border-color); border-top: 4px solid var(--secondary-teal); box-shadow: 0 2px 5px rgba(0,0,0,0.05); min-width: 220px; text-align: left; padding: 12px 14px; border-radius: 4px; }
-        .tree-node-block.dept-box h4 { font-size: 0.88rem; font-weight: 700; color: var(--primary-dark); }
-        .tree-node-block.dept-box p { font-size: 0.78rem; color: var(--text-muted); margin-top: 3px; font-weight: 500; }
-        
-        .tree-branch-connector { width: 2px; height: 24px; background-color: #cbd5e1; }
-        .tree-horizontal-grid { display: flex; justify-content: center; gap: 25px; width: 100%; position: relative; margin-top: 5px; }
-        .dept-flex-row { display: flex; flex-direction: column; gap: 12px; justify-content: center; width: 100%; align-items: center; }
+        .tree-node-block { background: var(--primary-dark); color: white; padding: 12px 24px; border-radius: 6px; font-weight: 700; text-align: center; min-width: 160px; }
+        .tree-node-block.dir-box { background: #eef5f6; color: var(--primary-color); border: 2px solid var(--primary-color); }
+        .tree-node-block.div-box { background: var(--primary-color); color: white; }
+        .tree-node-block.dept-box { background: white; color: #333; border: 1px solid var(--border-color); border-top: 4px solid var(--secondary-teal); padding: 10px; text-align: left; width: 200px; margin: 5px 0; }
+        .tree-branch-connector { width: 2px; height: 20px; background-color: #cbd5e1; }
+        .tree-horizontal-grid { display: flex; justify-content: center; gap: 25px; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -115,98 +90,64 @@
         <div class="login-card">
             <i class="fa-solid fa-shield-halved main-lock"></i>
             <h2>Enterprise Portal Gateway</h2>
-            <p>Aplikasi ini terbatas hanya untuk personil HR & OD</p>
-            <input type="text" id="username" class="input-control" placeholder="Email Korporat (admin@enterprise.co.id)">
+            <p>Silakan masuk untuk sinkronisasi data</p>
+            <input type="text" id="username" class="input-control" placeholder="Email (admin@enterprise.co.id)">
             <input type="password" id="password" class="input-control" placeholder="Password Akses">
             <button class="btn-submit-auth" onclick="executeAuthenticationRequest()">Otentikasi & Masuk</button>
             
             <div id="loadingStatus" class="sync-spinner">
-                <i class="fa-solid fa-spinner"></i> Sinkronisasi Live Data Google Sheets...
+                <i class="fa-solid fa-spinner"></i> Menghubungkan ke Google Sheets...
             </div>
-            <div id="login-error" class="error-message">Kredensial salah atau tidak memiliki otorisasi!</div>
+            <div id="login-error" class="error-message"></div>
         </div>
     </div>
 
     <div id="app-shell" style="display: none; width: 100%;">
-        
         <div class="enterprise-sidebar">
-            <div class="brand-header">
-                <i class="fa-solid fa-cubes-stacked"></i>
-                <span>Talent Intelligence</span>
-            </div>
+            <div class="brand-header"><i class="fa-solid fa-cubes-stacked"></i> <span>Talent Intelligence</span></div>
             <ul class="nav-menu-list">
                 <li class="nav-item-link active" id="tab-dashboard" onclick="switchActiveViewport('dashboard')"><i class="fa-solid fa-chart-pie"></i> Executive Dashboard</li>
                 <li class="nav-item-link" id="tab-organization" onclick="switchActiveViewport('organization')"><i class="fa-solid fa-sitemap"></i> Organization Structure</li>
-                <li class="nav-item-link" id="tab-talentPool" onclick="switchActiveViewport('talentPool')"><i class="fa-solid fa-user-gear"></i> Talent Pool Card</li>
-                <li class="nav-item-link" id="tab-matrix9box" onclick="switchActiveViewport('matrix9box')"><i class="fa-solid fa-table-cells-large"></i> 9-Box HAV Matrix</li>
             </ul>
             <div class="user-profile-widget">
-                <div><i class="fa-solid fa-circle-user"></i> Administrator</div>
-                <i class="fa-solid fa-right-from-bracket btn-logoff" onclick="executeLogoffProcedure()" title="Keluar Sistem"></i>
+                <div><i class="fa-solid fa-circle-user"></i> Admin</div>
+                <i class="fa-solid fa-right-from-bracket" style="cursor:pointer" onclick="executeLogoffProcedure()"></i>
             </div>
         </div>
 
         <div class="workspace-content">
-            
             <div class="filter-panel-card">
                 <div class="filter-node">
                     <label>Directorate</label>
-                    <select id="selDirectorate" onchange="handleDirectorateFilterChange()"><option value="ALL">-- All Directorate --</option></select>
+                    <select id="selDirectorate" onchange="handleDirectorateFilterChange()"><option value="ALL">-- All --</option></select>
                 </div>
                 <div class="filter-node">
                     <label>Division</label>
-                    <select id="selDivision" onchange="applyGlobalFiltersRecomputation()"><option value="ALL">-- All Division --</option></select>
+                    <select id="selDivision" onchange="applyGlobalFiltersRecomputation()"><option value="ALL">-- All --</option></select>
                 </div>
                 <div class="filter-node">
                     <label>Search Employee</label>
-                    <input type="text" id="inpSearch" placeholder="Ketik nama / ID..." oninput="applyGlobalFiltersRecomputation()">
+                    <input type="text" id="inpSearch" placeholder="Cari nama / ID..." oninput="applyGlobalFiltersRecomputation()">
                 </div>
-                <button class="btn-reset-filter" onclick="resetGlobalFiltersSystem()">Reset Filter</button>
+                <button class="btn-reset-filter" onclick="resetGlobalFiltersSystem()">Reset</button>
             </div>
 
             <div id="view-dashboard" class="module-viewport active-view">
-                <div class="viewport-header">
-                    <h1>Workforce Analytics Dashboard</h1>
-                    <p>Ringkasan performa makro organisasi terintegrasi langsung dengan database internal.</p>
-                </div>
-                
+                <div class="viewport-header"><h1>Workforce Analytics Dashboard</h1></div>
                 <div class="dashboard-kpi-grid">
-                    <div class="kpi-card">
-                        <div class="kpi-data"><h3 id="kpiTotalEmp">0</h3><p>Total Headcount</p></div>
-                        <div class="kpi-icon-wrapper"><i class="fa-solid fa-users"></i></div>
-                    </div>
-                    <div class="kpi-card">
-                        <div class="kpi-data"><h3 id="kpiTotalDir">0</h3><p>Directorate Count</p></div>
-                        <div class="kpi-icon-wrapper"><i class="fa-solid fa-building"></i></div>
-                    </div>
-                    <div class="kpi-card">
-                        <div class="kpi-data"><h3 id="kpiTotalDiv">0</h3><p>Division Count</p></div>
-                        <div class="kpi-icon-wrapper"><i class="fa-solid fa-network-wired"></i></div>
-                    </div>
-                    <div class="kpi-card">
-                        <div class="kpi-data"><h3 id="kpiAvgPerf">0.0</h3><p>Avg Performance Score</p></div>
-                        <div class="kpi-icon-wrapper"><i class="fa-solid fa-star-half-stroke"></i></div>
-                    </div>
+                    <div class="kpi-card"><div class="kpi-data"><h3 id="kpiTotalEmp">0</h3><p>Total Headcount</p></div></div>
+                    <div class="kpi-card"><div class="kpi-data"><h3 id="kpiTotalDir">0</h3><p>Directorates</p></div></div>
+                    <div class="kpi-card"><div class="kpi-data"><h3 id="kpiTotalDiv">0</h3><p>Divisions</p></div></div>
+                    <div class="kpi-card"><div class="kpi-data"><h3 id="kpiAvgPerf">0.0</h3><p>Avg Perf Score</p></div></div>
                 </div>
-
                 <div class="analytics-charts-container">
-                    <div class="chart-visual-card">
-                        <h3>Talent Segment Distribution Density</h3>
-                        <div id="chartTalentClassAnchor" class="distribution-chart-stack"></div>
-                    </div>
-                    <div class="chart-visual-card">
-                        <h3>Human Asset Value Concentration Index</h3>
-                        <div id="chartHavAnchor" class="distribution-chart-stack"></div>
-                    </div>
+                    <div class="chart-visual-card"><h3>Talent Segment Distribution</h3><div id="chartTalentClassAnchor" class="distribution-chart-stack"></div></div>
+                    <div class="chart-visual-card"><h3>Human Asset Value Level</h3><div id="chartHavAnchor" class="distribution-chart-stack"></div></div>
                 </div>
             </div>
 
             <div id="view-organization" class="module-viewport">
-                <div class="viewport-header">
-                    <h1>Workforce Analytics & Organization Structure Explorer</h1>
-                    <p>Visualisasi struktur bagan kedudukan komparatif fungsional korporasi.</p>
-                </div>
-                
+                <div class="viewport-header"><h1>Organization Structure Explorer</h1></div>
                 <div class="org-structure-layout-split">
                     <div class="tree-viewport-card">
                         <div class="chart-tree-root">
@@ -215,36 +156,18 @@
                             <div id="htmlTreeLiveAnchor" style="width:100%; display:flex; flex-direction:column; align-items:center;"></div>
                         </div>
                     </div>
-                    
-                    <div class="chart-visual-card" style="margin-bottom:0;">
-                        <h3>HR Mini Dashboard (Filtered)</h3>
-                        <div class="dashboard-kpi-grid" style="grid-template-columns: 1fr; gap:15px; margin-bottom:0;">
-                            <div class="kpi-card" style="padding:15px;">
-                                <div class="kpi-data"><h3 id="miniKpiCount">0</h3><p>Active Employees Filtered</p></div>
-                            </div>
-                            <div class="kpi-card" style="padding:15px;">
-                                <div class="kpi-data"><h3 id="miniKpiAvg">0.0</h3><p>Filtered Performance Avg</p></div>
-                            </div>
-                        </div>
+                    <div class="chart-visual-card">
+                        <h3>Filtered Summary</h3>
+                        <p>Active Employees: <strong id="miniKpiCount">0</strong></p>
+                        <p>Performance Avg: <strong id="miniKpiAvg">0.0</strong></p>
                     </div>
                 </div>
             </div>
-
-            <div id="view-talentPool" class="module-viewport">
-                <div class="viewport-header"><h1>Talent Pool Registry</h1><p>Modul berikut sedang dalam fase konstruksi inkremental.</p></div>
-            </div>
-
-            <div id="view-matrix9box" class="module-viewport">
-                <div class="viewport-header"><h1>Human Asset Value (9-Box Grid)</h1><p>Modul berikut sedang dalam fase konstruksi inkremental.</p></div>
-            </div>
-
         </div>
     </div>
 
     <script>
         const USER_AUTH = { email: "admin@enterprise.co.id", pass: "HrisSuccess2026!" };
-        
-        // CORRECTION: Menggunakan URL Publish Web CSV murni dari tautan hosting spreadsheet rahasia Anda
         const LINK_SPREADSHEET_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRqlYIaIdrvXjfY3_VbsqQlFhtZrrtbjRZRTCHG8-p-ebaNfheq_HaOxL3QJq5NPZoJM0WqYLzk5Z5m/pub?output=csv";
 
         let MASTER_EMPLOYEE_DATA = [];
@@ -267,6 +190,7 @@
                 sessionStorage.setItem("enterprise_auth_state", "validated");
                 fetchLiveDatabaseEngine();
             } else {
+                err.innerText = "Kredensial salah!";
                 err.style.display = "block";
             }
         }
@@ -283,65 +207,68 @@
         }
 
         async function fetchLiveDatabaseEngine() {
+            const err = document.getElementById("login-error");
             try {
-                // Gunakan cap waktu unik nocache bypass pembatasan cache lokal browser
-                const targetUrl = LINK_SPREADSHEET_CSV + "&nocache=" + new Date().getTime();
-                const response = await fetch(targetUrl);
-                
-                if (!response.ok) throw new Error("HTTP status " + response.status);
+                const response = await fetch(LINK_SPREADSHEET_CSV + "&nocache=" + new Date().getTime());
+                if (!response.ok) throw new Error("Gagal mengambil data. Status HTTP: " + response.status);
                 
                 const dataText = await response.text();
+                if (dataText.includes("<!DOCTYPE html") || dataText.includes("login")) {
+                    throw new Error("Data yang diterima berbentuk HTML, bukan CSV. Pastikan pilihan Publish ke Web adalah 'CSV' dan bukan 'Web Page'.");
+                }
+                
                 parseRawCsvToJSON(dataText);
-            } catch (err) {
-                console.error("Sinkronisasi gagal:", err);
-                alert("Koneksi ekspor data terputus atau format salah.");
+                document.getElementById("login-screen").style.display = "none";
+                document.getElementById("app-shell").style.display = "flex";
+            } catch (error) {
+                console.error(error);
+                sessionStorage.removeItem("enterprise_auth_state");
+                document.getElementById("loadingStatus").style.display = "none";
+                err.innerText = "Koneksi Gagal: " + error.message;
+                err.style.display = "block";
             }
         }
 
         function parseRawCsvToJSON(csvText) {
-            let rows = csvText.split(/\r?\n/);
+            let rows = csvText.split(/\r?\n/).filter(row => row.trim() !== "");
             if (rows.length === 0) return;
 
-            let headers = deconstructCsvLine(rows[0]).map(h => h.replace(/^["']|["']$/g, '').trim().toLowerCase());
+            // Deteksi Otomatis Pembatas Kolom (Koma atau Titik Koma)
+            let delimiter = rows[0].includes(";") ? ";" : ",";
+            
+            let headers = deconstructCsvLine(rows[0], delimiter).map(h => h.replace(/^["']|["']$/g, '').trim().toLowerCase());
             MASTER_EMPLOYEE_DATA = [];
 
             const findColumnIdx = (name) => headers.indexOf(name.toLowerCase().trim());
 
-            const idxId = findColumnIdx("Employee ID");
-            const idxNama = findColumnIdx("Nama");
-            const idxAge = findColumnIdx("Age");
-            const idxGender = findColumnIdx("Gender");
-            const idxDir = findColumnIdx("Directorate");
-            const idxDiv = findColumnIdx("Division");
-            const idxDept = findColumnIdx("Department");
-            const idxLevel = findColumnIdx("Level");
-            const idxPosition = findColumnIdx("Employee Position");
-            const idxHead = findColumnIdx("BU/SU Head");
-            const idxAvgPerf = findColumnIdx("Average Performance Score");
-            const idxHavPerf = findColumnIdx("Human Asset Value - Performance");
-            const idxBox9 = findColumnIdx("9 Box HAV Matrix");
+            // Pemetaan indeks nama kolom
+            const idxId = findColumnIdx("employee id");
+            const idxNama = findColumnIdx("nama");
+            const idxDir = findColumnIdx("directorate");
+            const idxDiv = findColumnIdx("division");
+            const idxPosition = findColumnIdx("employee position");
+            const idxAvgPerf = findColumnIdx("average performance score");
+            const idxHavPerf = findColumnIdx("human asset value - performance");
+            const idxBox9 = findColumnIdx("9 box hav matrix");
+
+            if (idxId === -1 && idxNama === -1) {
+                alert("PERINGATAN: Kolom utama seperti 'Employee ID' atau 'Nama' tidak ditemukan di lembar spreadsheet Anda!");
+            }
 
             for (let i = 1; i < rows.length; i++) {
-                if (!rows[i].trim()) continue;
-                let cells = deconstructCsvLine(rows[i]).map(c => c.replace(/^["']|["']$/g, '').trim());
+                let cells = deconstructCsvLine(rows[i], delimiter).map(c => c.replace(/^["']|["']$/g, '').trim());
                 
-                if (idxId !== -1 && cells[idxId]) {
-                    let employee = {
-                        employeeId: cells[idxId],
+                if (cells.length > 0 && cells[idxId || 0]) {
+                    MASTER_EMPLOYEE_DATA.push({
+                        employeeId: idxId !== -1 ? cells[idxId] : "",
                         nama: idxNama !== -1 ? cells[idxNama] : "",
-                        age: idxAge !== -1 ? cells[idxAge] : "",
-                        gender: idxGender !== -1 ? cells[idxGender] : "",
-                        directorate: idxDir !== -1 ? cells[idxDir] : "",
-                        division: idxDiv !== -1 ? cells[idxDiv] : "",
-                        department: idxDept !== -1 ? cells[idxDept] : "",
-                        level: idxLevel !== -1 ? cells[idxLevel] : "",
+                        directorate: idxDir !== -1 ? cells[idxDir] : "Unassigned",
+                        division: idxDiv !== -1 ? cells[idxDiv] : "Unassigned",
                         employeePosition: idxPosition !== -1 ? cells[idxPosition] : "",
-                        buSuHead: idxHead !== -1 ? cells[idxHead] : "",
                         averagePerformanceScore: idxAvgPerf !== -1 ? cells[idxAvgPerf] : "0.0",
                         havPerformance: idxHavPerf !== -1 ? cells[idxHavPerf] : "",
                         box9Matrix: idxBox9 !== -1 ? cells[idxBox9] : ""
-                    };
-                    MASTER_EMPLOYEE_DATA.push(employee);
+                    });
                 }
             }
 
@@ -350,14 +277,14 @@
             recomputeModuleVisualViewports();
         }
 
-        function deconstructCsvLine(textLine) {
+        function deconstructCsvLine(textLine, delimiter) {
             let splitCells = [];
             let segment = '';
             let toggleQuotes = false;
             for (let i = 0; i < textLine.length; i++) {
                 let character = textLine[i];
                 if (character === '"') { toggleQuotes = !toggleQuotes; }
-                else if (character === ',' && !toggleQuotes) { splitCells.push(segment); segment = ''; }
+                else if (character === delimiter && !toggleQuotes) { splitCells.push(segment); segment = ''; }
                 else { segment += character; }
             }
             splitCells.push(segment);
@@ -367,7 +294,6 @@
         function initializeDynamicDropdownSelectors() {
             const dirDropdown = document.getElementById("selDirectorate");
             dirDropdown.innerHTML = '<option value="ALL">-- All Directorate --</option>';
-
             const uniqueDirs = [...new Set(MASTER_EMPLOYEE_DATA.map(e => e.directorate).filter(Boolean))];
             uniqueDirs.forEach(d => dirDropdown.innerHTML += `<option value="${d}">${d}</option>`);
             handleDirectorateFilterChange();
@@ -380,7 +306,6 @@
 
             const poolSource = targetDir === "ALL" ? MASTER_EMPLOYEE_DATA : MASTER_EMPLOYEE_DATA.filter(e => e.directorate === targetDir);
             const uniqueDivs = [...new Set(poolSource.map(e => e.division).filter(Boolean))];
-            
             uniqueDivs.forEach(v => divDropdown.innerHTML += `<option value="${v}">${v}</option>`);
             applyGlobalFiltersRecomputation();
         }
@@ -393,7 +318,7 @@
             filteredStateData = MASTER_EMPLOYEE_DATA.filter(emp => {
                 const matchDir = (fDir === "ALL" || emp.directorate === fDir);
                 const matchDiv = (fDiv === "ALL" || emp.division === fDiv);
-                const matchTxt = !keyword || (emp.nama && emp.nama.toLowerCase().includes(keyword)) || (emp.employeeId && emp.employeeId.toString().includes(keyword));
+                const matchTxt = !keyword || emp.nama.toLowerCase().includes(keyword) || emp.employeeId.toString().includes(keyword);
                 return matchDir && matchDiv && matchTxt;
             });
 
@@ -410,7 +335,6 @@
             activeModuleView = tabId;
             document.querySelectorAll(".nav-item-link").forEach(node => node.classList.remove("active"));
             document.querySelectorAll(".module-viewport").forEach(view => view.classList.remove("active-view"));
-
             document.getElementById(`tab-${tabId}`).classList.add("active");
             document.getElementById(`view-${tabId}`).classList.add("active-view");
             recomputeModuleVisualViewports();
@@ -423,69 +347,56 @@
 
         function renderExecutiveDashboardVisuals() {
             document.getElementById("kpiTotalEmp").innerText = filteredStateData.length;
-            const countDir = [...new Set(filteredStateData.map(e => e.directorate).filter(Boolean))].length;
-            const countDiv = [...new Set(filteredStateData.map(e => e.division).filter(Boolean))].length;
-            document.getElementById("kpiTotalDir").innerText = countDir;
-            document.getElementById("kpiTotalDiv").innerText = countDiv;
+            document.getElementById("kpiTotalDir").innerText = [...new Set(filteredStateData.map(e => e.directorate))].length;
+            document.getElementById("kpiTotalDiv").innerText = [...new Set(filteredStateData.map(e => e.division))].length;
 
             let totalScore = 0, validRows = 0;
             filteredStateData.forEach(e => {
-                let score = parseFloat(e.averagePerformanceScore);
+                let score = parseFloat(e.averagePerformanceScore.replace(",", "."));
                 if (!isNaN(score)) { totalScore += score; validRows++; }
             });
             document.getElementById("kpiAvgPerf").innerText = validRows > 0 ? (totalScore / validRows).toFixed(1) : "0.0";
 
+            // Chart Rendering
             const tAnchor = document.getElementById("chartTalentClassAnchor");
             tAnchor.innerHTML = "";
-            const targetSegments = ["STAR", "HIGH PERFORMER", "PROMISING", "SOLID PERFORMER", "DEVELOPING", "INEFFECTIVE"];
-            
-            targetSegments.forEach(segment => {
-                let matchCount = filteredStateData.filter(e => e.box9Matrix && e.box9Matrix.toUpperCase().trim() === segment).length;
-                let percentage = filteredStateData.length > 0 ? (matchCount / filteredStateData.length) * 100 : 0;
-                tAnchor.innerHTML += `
-                    <div class="bar-node">
-                        <div class="bar-label-info"><span>${segment}</span><span>${matchCount} Staff (${percentage.toFixed(0)}%)</span></div>
-                        <div class="bar-rail"><div class="bar-core-fill" style="width: ${percentage}%; background: var(--primary-color);"></div></div>
-                    </div>
-                `;
+            ["STAR", "HIGH PERFORMER", "PROMISING", "SOLID PERFORMER", "DEVELOPING", "INEFFECTIVE"].forEach(segment => {
+                let matchCount = filteredStateData.filter(e => e.box9Matrix.toUpperCase().trim() === segment).length;
+                let pct = filteredStateData.length > 0 ? (matchCount / filteredStateData.length) * 100 : 0;
+                tAnchor.innerHTML += `<div class="bar-node"><div class="bar-label-info"><span>${segment}</span><span>${matchCount} Staff (${pct.toFixed(0)}%)</span></div><div class="bar-rail"><div class="bar-core-fill" style="width: ${pct}%;"></div></div></div>`;
             });
 
             const hAnchor = document.getElementById("chartHavAnchor");
             hAnchor.innerHTML = "";
-            const sampleHavGrids = ["High", "Medium", "Low"];
-            sampleHavGrids.forEach(g => {
-                let matchCount = filteredStateData.filter(e => e.havPerformance && e.havPerformance.trim() === g).length;
-                let percentage = filteredStateData.length > 0 ? (matchCount / filteredStateData.length) * 100 : 0;
-                hAnchor.innerHTML += `
-                    <div class="bar-node">
-                        <div class="bar-label-info"><span>Performance Level: ${g}</span><span>${matchCount} Karyawan (${percentage.toFixed(0)}%)</span></div>
-                        <div class="bar-rail"><div class="bar-core-fill" style="width: ${percentage}%; background: var(--secondary-teal);"></div></div>
-                    </div>
-                `;
+            ["High", "Medium", "Low"].forEach(g => {
+                let matchCount = filteredStateData.filter(e => e.havPerformance.toLowerCase().trim() === g.toLowerCase()).length;
+                let pct = filteredStateData.length > 0 ? (matchCount / filteredStateData.length) * 100 : 0;
+                hAnchor.innerHTML += `<div class="bar-node"><div class="bar-label-info"><span>Performance: ${g}</span><span>${matchCount} Staff (${pct.toFixed(0)}%)</span></div><div class="bar-rail"><div class="bar-core-fill" style="width: ${pct}%; background:var(--secondary-teal)"></div></div></div>`;
             });
         }
 
         function renderOrganizationalTreeModule() {
             const anchor = document.getElementById("htmlTreeLiveAnchor");
             anchor.innerHTML = "";
-
+            
             document.getElementById("miniKpiCount").innerText = filteredStateData.length;
+            
             let totalScore = 0, validRows = 0;
             filteredStateData.forEach(e => {
-                let score = parseFloat(e.averagePerformanceScore);
+                let score = parseFloat(e.averagePerformanceScore.replace(",", "."));
                 if (!isNaN(score)) { totalScore += score; validRows++; }
             });
             document.getElementById("miniKpiAvg").innerText = validRows > 0 ? (totalScore / validRows).toFixed(1) : "0.0";
 
             if (filteredStateData.length === 0) {
-                anchor.innerHTML = '<div class="no-data-msg" style="margin-top:20px;">No operational cluster matching active filters.</div>';
+                anchor.innerHTML = "<div>Tidak ada data yang cocok dengan filter aktif.</div>";
                 return;
             }
 
             const treeMap = {};
             filteredStateData.forEach(emp => {
-                let dir = emp.directorate || "Unassigned Directorate";
-                let div = emp.division || "Unassigned Division";
+                let dir = emp.directorate;
+                let div = emp.division;
                 if (!treeMap[dir]) treeMap[dir] = {};
                 if (!treeMap[dir][div]) treeMap[dir][div] = [];
                 treeMap[dir][div].push(emp);
@@ -494,49 +405,28 @@
             for (const dirName in treeMap) {
                 let dirElement = document.createElement("div");
                 dirElement.className = "chart-tree-root";
-                dirElement.innerHTML = `
-                    <div class="tree-node-block dir-box">${dirName}</div>
-                    <div class="tree-branch-connector"></div>
-                `;
+                dirElement.innerHTML = `<div class="tree-node-block dir-box">${dirName}</div><div class="tree-branch-connector"></div>`;
 
                 let divGrid = document.createElement("div");
                 divGrid.className = "tree-horizontal-grid";
 
                 for (const divName in treeMap[dirName]) {
                     let divContainer = document.createElement("div");
-                    divContainer.style.display = "flex";
-                    divContainer.style.flexDirection = "column";
-                    divContainer.style.alignItems = "center";
-                    
-                    divContainer.innerHTML = `
-                        <div class="tree-node-block div-box">${divName}</div>
-                        <div class="tree-branch-connector"></div>
-                    `;
+                    divContainer.style = "display: flex; flex-direction: column; align-items: center;";
+                    divContainer.innerHTML = `<div class="tree-node-block div-box">${divName}</div><div class="tree-branch-connector"></div>`;
 
                     let deptContainer = document.createElement("div");
-                    deptContainer.className = "dept-flex-row";
-
                     treeMap[dirName][divName].forEach(emp => {
                         let empBox = document.createElement("div");
                         empBox.className = "tree-node-block dept-box";
-                        empBox.innerHTML = `
-                            <h4>${emp.nama}</h4>
-                            <p>${emp.employeePosition}</p>
-                            <p style="font-size: 0.68rem; color: var(--primary-color); font-weight:700; margin-top:4px;"><i class="fa-solid fa-id-badge"></i> ID: ${emp.employeeId}</p>
-                        `;
+                        empBox.innerHTML = `<h4>${emp.nama}</h4><p style="font-size:0.75rem;color:var(--text-muted)">${emp.employeePosition}</p>`;
                         deptContainer.appendChild(empBox);
                     });
-
                     divContainer.appendChild(deptContainer);
                     divGrid.appendChild(divContainer);
                 }
-
                 dirElement.appendChild(divGrid);
                 anchor.appendChild(dirElement);
-                
-                let spacing = document.createElement("div");
-                spacing.style.height = "30px";
-                anchor.appendChild(spacing);
             }
         }
     </script>
