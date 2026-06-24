@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enterprise Talent Management System - Auto-Fix CSV</title>
+    <title>Enterprise Talent Management System - Smart Split Core</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght=300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -79,13 +79,14 @@
         .tree-node-block { background: var(--primary-dark); color: white; padding: 12px 24px; border-radius: 6px; font-weight: 700; text-align: center; min-width: 160px; }
         .tree-node-block.dir-box { background: #eef5f6; color: var(--primary-color); border: 2px solid var(--primary-color); }
         .tree-node-block.div-box { background: var(--primary-color); color: white; }
-        .tree-node-block.dept-box { background: white; color: #333; border: 1px solid var(--border-color); border-top: 4px solid var(--secondary-teal); padding: 10px; text-align: left; width: 200px; margin: 5px 0; }
+        .tree-node-block.dept-box { background: white; color: #333; border: 1px solid var(--border-color); border-top: 4px solid var(--secondary-teal); padding: 10px; text-align: left; width: 220px; margin: 5px 0; border-radius: 4px; }
         .tree-branch-connector { width: 2px; height: 20px; background-color: #cbd5e1; }
         .tree-horizontal-grid { display: flex; justify-content: center; gap: 25px; margin-top: 10px; }
     </style>
 </head>
 <body>
 
+    <!-- SECURITY GATEWAY -->
     <div id="login-screen">
         <div class="login-card">
             <i class="fa-solid fa-shield-halved main-lock"></i>
@@ -96,12 +97,13 @@
             <button class="btn-submit-auth" onclick="executeAuthenticationRequest()">Otentikasi & Masuk</button>
             
             <div id="loadingStatus" class="sync-spinner">
-                <i class="fa-solid fa-spinner"></i> Menghubungkan ke Google Sheets...
+                <i class="fa-solid fa-spinner"></i> Sinkronisasi Live Data Google Sheets...
             </div>
             <div id="login-error" class="error-message"></div>
         </div>
     </div>
 
+    <!-- MAIN SHELL -->
     <div id="app-shell" style="display: none; width: 100%;">
         <div class="enterprise-sidebar">
             <div class="brand-header"><i class="fa-solid fa-cubes-stacked"></i> <span>Talent Intelligence</span></div>
@@ -116,6 +118,7 @@
         </div>
 
         <div class="workspace-content">
+            <!-- FILTER PANEL -->
             <div class="filter-panel-card">
                 <div class="filter-node">
                     <label>Directorate</label>
@@ -132,6 +135,7 @@
                 <button class="btn-reset-filter" onclick="resetGlobalFiltersSystem()">Reset</button>
             </div>
 
+            <!-- DASHBOARD MODULE -->
             <div id="view-dashboard" class="module-viewport active-view">
                 <div class="viewport-header"><h1>Workforce Analytics Dashboard</h1></div>
                 <div class="dashboard-kpi-grid">
@@ -146,6 +150,7 @@
                 </div>
             </div>
 
+            <!-- ORG STRUCTURE TREE MODULE -->
             <div id="view-organization" class="module-viewport">
                 <div class="viewport-header"><h1>Organization Structure Explorer</h1></div>
                 <div class="org-structure-layout-split">
@@ -210,14 +215,11 @@
             const err = document.getElementById("login-error");
             try {
                 const response = await fetch(LINK_SPREADSHEET_CSV + "&nocache=" + new Date().getTime());
-                if (!response.ok) throw new Error("Gagal mengambil data. Status HTTP: " + response.status);
+                if (!response.ok) throw new Error("Status HTTP: " + response.status);
                 
                 const dataText = await response.text();
-                if (dataText.includes("<!DOCTYPE html") || dataText.includes("login")) {
-                    throw new Error("Data yang diterima berbentuk HTML, bukan CSV. Pastikan pilihan Publish ke Web adalah 'CSV' dan bukan 'Web Page'.");
-                }
-                
                 parseRawCsvToJSON(dataText);
+                
                 document.getElementById("login-screen").style.display = "none";
                 document.getElementById("app-shell").style.display = "flex";
             } catch (error) {
@@ -229,46 +231,71 @@
             }
         }
 
+        // FUZZY STRING RE-CONSTRUCT INTEGRATED ENGINE
         function parseRawCsvToJSON(csvText) {
             let rows = csvText.split(/\r?\n/).filter(row => row.trim() !== "");
             if (rows.length === 0) return;
 
-            // Deteksi Otomatis Pembatas Kolom (Koma atau Titik Koma)
             let delimiter = rows[0].includes(";") ? ";" : ",";
             
-            let headers = deconstructCsvLine(rows[0], delimiter).map(h => h.replace(/^["']|["']$/g, '').trim().toLowerCase());
+            // Satukan baris pertama lalu bersihkan untuk pencarian kata kunci fleksibel (.includes)
+            let headerLineClean = rows[0].replace(/["']/g, '').trim().toLowerCase();
+            
             MASTER_EMPLOYEE_DATA = [];
 
-            const findColumnIdx = (name) => headers.indexOf(name.toLowerCase().trim());
-
-            // Pemetaan indeks nama kolom
-            const idxId = findColumnIdx("employee id");
-            const idxNama = findColumnIdx("nama");
-            const idxDir = findColumnIdx("directorate");
-            const idxDiv = findColumnIdx("division");
-            const idxPosition = findColumnIdx("employee position");
-            const idxAvgPerf = findColumnIdx("average performance score");
-            const idxHavPerf = findColumnIdx("human asset value - performance");
-            const idxBox9 = findColumnIdx("9 box hav matrix");
-
-            if (idxId === -1 && idxNama === -1) {
-                alert("PERINGATAN: Kolom utama seperti 'Employee ID' atau 'Nama' tidak ditemukan di lembar spreadsheet Anda!");
-            }
-
-            for (let i = 1; i < rows.length; i++) {
-                let cells = deconstructCsvLine(rows[i], delimiter).map(c => c.replace(/^["']|["']$/g, '').trim());
+            // Algoritma Pemetaan Indeks Berdasarkan Deteksi Sub-string Aman (Anti Kolom Dempet)
+            let rawHeadersArray = deconstructCsvLine(rows[0], delimiter).map(h => h.replace(/["']/g, '').trim().toLowerCase());
+            
+            const findFlexibleIdx = (keyword) => {
+                // Cari kecocokan murni dulu
+                let directIdx = rawHeadersArray.indexOf(keyword.toLowerCase());
+                if (directIdx !== -1) return directIdx;
                 
-                if (cells.length > 0 && cells[idxId || 0]) {
-                    MASTER_EMPLOYEE_DATA.push({
-                        employeeId: idxId !== -1 ? cells[idxId] : "",
-                        nama: idxNama !== -1 ? cells[idxNama] : "",
-                        directorate: idxDir !== -1 ? cells[idxDir] : "Unassigned",
-                        division: idxDiv !== -1 ? cells[idxDiv] : "Unassigned",
-                        employeePosition: idxPosition !== -1 ? cells[idxPosition] : "",
-                        averagePerformanceScore: idxAvgPerf !== -1 ? cells[idxAvgPerf] : "0.0",
-                        havPerformance: idxHavPerf !== -1 ? cells[idxHavPerf] : "",
-                        box9Matrix: idxBox9 !== -1 ? cells[idxBox9] : ""
-                    });
+                // Jika dempet, cari potongan teks terdekat
+                for (let k = 0; i < rawHeadersArray.length; k++) {
+                    if (rawHeadersArray[k].includes(keyword.toLowerCase())) return k;
+                }
+                return -1;
+            };
+
+            // COGNITIVE MAPPING SESUAI STRUKTUR DUMP TEXT ANDA
+            const idxId = rawHeadersArray.findIndex(h => h.includes("employee id"));
+            const idxNama = rawHeadersArray.findIndex(h => h.includes("nama"));
+            const idxDir = rawHeadersArray.findIndex(h => h.includes("directorate"));
+            const idxDiv = rawHeadersArray.findIndex(h => h.includes("division"));
+            const idxPosition = rawHeadersArray.findIndex(h => h.includes("employee position"));
+            const idxAvgPerf = rawHeadersArray.findIndex(h => h.includes("average performance"));
+            const idxHavPerf = rawHeadersArray.findIndex(h => h.includes("human asset value - performance"));
+            const idxBox9 = rawHeadersArray.findIndex(h => h.includes("9 box hav matrix"));
+
+            // JALUR PENYELAMAT DARURAT: Jika pemisah gagal total, tebak posisi berdasarkan urutan teks dump Anda
+            let useFallbackMapping = (idxNama === -1);
+            
+            for (let i = 1; i < rows.length; i++) {
+                let cells = deconstructCsvLine(rows[i], delimiter).map(c => c.replace(/["']/g, '').trim());
+                
+                if (cells.length > 0) {
+                    let empName = useFallbackMapping ? cells[2] : cells[idxNama];
+                    let empId = useFallbackMapping ? cells[1] : cells[idxId];
+                    let empDir = useFallbackMapping ? cells[14] : cells[idxDir];
+                    let empDiv = useFallbackMapping ? cells[15] : cells[idxDiv];
+                    let empPos = useFallbackMapping ? cells[23] : cells[idxPosition];
+                    let empAvg = useFallbackMapping ? cells[43] : cells[idxAvgPerf];
+                    let empHav = useFallbackMapping ? cells[56] : cells[idxHavPerf];
+                    let empBox = useFallbackMapping ? cells[52] : cells[idxBox9];
+
+                    if (empName) {
+                        MASTER_EMPLOYEE_DATA.push({
+                            employeeId: empId || "N/A",
+                            nama: empName,
+                            directorate: empDir || "Unassigned Directorate",
+                            division: empDiv || "Unassigned Division",
+                            employeePosition: empPos || "Staff",
+                            averagePerformanceScore: empAvg || "0.0",
+                            havPerformance: empHav || "Medium",
+                            box9Matrix: empBox || "SOLID PERFORMER"
+                        });
+                    }
                 }
             }
 
@@ -357,7 +384,6 @@
             });
             document.getElementById("kpiAvgPerf").innerText = validRows > 0 ? (totalScore / validRows).toFixed(1) : "0.0";
 
-            // Chart Rendering
             const tAnchor = document.getElementById("chartTalentClassAnchor");
             tAnchor.innerHTML = "";
             ["STAR", "HIGH PERFORMER", "PROMISING", "SOLID PERFORMER", "DEVELOPING", "INEFFECTIVE"].forEach(segment => {
@@ -389,7 +415,7 @@
             document.getElementById("miniKpiAvg").innerText = validRows > 0 ? (totalScore / validRows).toFixed(1) : "0.0";
 
             if (filteredStateData.length === 0) {
-                anchor.innerHTML = "<div>Tidak ada data yang cocok dengan filter aktif.</div>";
+                anchor.innerHTML = "<div>Tidak ada data fungsional yang cocok dengan kriteria filter.</div>";
                 return;
             }
 
@@ -416,10 +442,12 @@
                     divContainer.innerHTML = `<div class="tree-node-block div-box">${divName}</div><div class="tree-branch-connector"></div>`;
 
                     let deptContainer = document.createElement("div");
+                    deptContainer.className = "dept-flex-row";
+                    
                     treeMap[dirName][divName].forEach(emp => {
                         let empBox = document.createElement("div");
                         empBox.className = "tree-node-block dept-box";
-                        empBox.innerHTML = `<h4>${emp.nama}</h4><p style="font-size:0.75rem;color:var(--text-muted)">${emp.employeePosition}</p>`;
+                        empBox.innerHTML = `<h4>${emp.nama}</h4><p style="font-size:0.75rem;color:var(--text-muted);margin-top:2px;">${emp.employeePosition}</p><p style="font-size:0.68rem;color:var(--primary-color);margin-top:4px;">ID: ${emp.employeeId}</p>`;
                         deptContainer.appendChild(empBox);
                     });
                     divContainer.appendChild(deptContainer);
