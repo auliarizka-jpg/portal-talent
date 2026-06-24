@@ -244,8 +244,8 @@
     <script>
         const USER_AUTH = { email: "admin@enterprise.co.id", pass: "HrisSuccess2026!" };
         
-        // FORMAT EXPORT LIVE DATA ANTI-BLOCK GOOGLE SPREADSHEET 
-        const LINK_SPREADSHEET_CSV = "https://docs.google.com/spreadsheets/d/1GWqo70BBWotY1CVYk6E5L5QEyUnS9cWgVU0RBUL6D0A/pub?output=csv&gid=771256818";
+        // CORRECTION: Menggunakan URL Publish Web CSV murni dari tautan hosting spreadsheet rahasia Anda
+        const LINK_SPREADSHEET_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRqlYIaIdrvXjfY3_VbsqQlFhtZrrtbjRZRTCHG8-p-ebaNfheq_HaOxL3QJq5NPZoJM0WqYLzk5Z5m/pub?output=csv";
 
         let MASTER_EMPLOYEE_DATA = [];
         let filteredStateData = [];
@@ -284,12 +284,17 @@
 
         async function fetchLiveDatabaseEngine() {
             try {
-                const response = await fetch(LINK_SPREADSHEET_CSV);
+                // Gunakan cap waktu unik nocache bypass pembatasan cache lokal browser
+                const targetUrl = LINK_SPREADSHEET_CSV + "&nocache=" + new Date().getTime();
+                const response = await fetch(targetUrl);
+                
+                if (!response.ok) throw new Error("HTTP status " + response.status);
+                
                 const dataText = await response.text();
                 parseRawCsvToJSON(dataText);
             } catch (err) {
                 console.error("Sinkronisasi gagal:", err);
-                alert("Gagal menarik data terupdate dari Google Sheets. Pastikan hak akses sheets diatur publik Viewer.");
+                alert("Koneksi ekspor data terputus atau format salah.");
             }
         }
 
@@ -312,32 +317,8 @@
             const idxLevel = findColumnIdx("Level");
             const idxPosition = findColumnIdx("Employee Position");
             const idxHead = findColumnIdx("BU/SU Head");
-            const idxEduLevel = findColumnIdx("Level of Education");
-            const idxEduMajor = findColumnIdx("Education");
-            const idxOtherEdu = findColumnIdx("Other Education");
-            const idxCert = findColumnIdx("Professional Certification");
-            const idxTenure = findColumnIdx("Tenure");
-            const idxRetire = findColumnIdx("Year to Retirement");
-            const idxRole = findColumnIdx("Current Role");
-            const idxAsp = findColumnIdx("Talent Aspiration");
-            const idxComm = findColumnIdx("Manager Comment");
-            const idxKpi = findColumnIdx("Latest KPI 1");
-            const idxPerf24 = findColumnIdx("Perf 2024");
-            const idxPerf23 = findColumnIdx("Perf 2023");
-            const idxPerf22 = findColumnIdx("Perf 2022");
             const idxAvgPerf = findColumnIdx("Average Performance Score");
-            
-            const idxProb = findColumnIdx("Problem Solving");
-            const idxRelat = findColumnIdx("Building Relationship");
-            const idxCollab = findColumnIdx("Team Collaboration");
-            const idxGoals = findColumnIdx("Achieving Goals");
-            const idxTrust = findColumnIdx("Trustworthiness");
-            const idxLead = findColumnIdx("Leading People");
-            const idxCust = findColumnIdx("Customer Orientation");
-            const idxBiz = findColumnIdx("Business Savvy");
-            
             const idxHavPerf = findColumnIdx("Human Asset Value - Performance");
-            const idxHavPot = findColumnIdx("Human Asset Value - Potential");
             const idxBox9 = findColumnIdx("9 Box HAV Matrix");
 
             for (let i = 1; i < rows.length; i++) {
@@ -356,32 +337,8 @@
                         level: idxLevel !== -1 ? cells[idxLevel] : "",
                         employeePosition: idxPosition !== -1 ? cells[idxPosition] : "",
                         buSuHead: idxHead !== -1 ? cells[idxHead] : "",
-                        levelOfEducation: idxEduLevel !== -1 ? cells[idxEduLevel] : "",
-                        education: idxEduMajor !== -1 ? cells[idxEduMajor] : "",
-                        otherEducation: idxOtherEdu !== -1 ? cells[idxOtherEdu] : "",
-                        professionalCertification: idxCert !== -1 ? cells[idxCert] : "",
-                        tenure: idxTenure !== -1 ? cells[idxTenure] : "",
-                        yearToRetirement: idxRetire !== -1 ? cells[idxRetire] : "",
-                        currentRole: idxRole !== -1 ? cells[idxRole] : "",
-                        talentAspiration: idxAsp !== -1 ? cells[idxAsp] : "",
-                        managerComment: idxComm !== -1 ? cells[idxComm] : "",
-                        latestKpi1: idxKpi !== -1 ? cells[idxKpi] : "",
-                        perf2024: idxPerf24 !== -1 ? cells[idxPerf24] : "",
-                        perf2023: idxPerf23 !== -1 ? cells[idxPerf23] : "",
-                        perf2022: idxPerf22 !== -1 ? cells[idxPerf22] : "",
                         averagePerformanceScore: idxAvgPerf !== -1 ? cells[idxAvgPerf] : "0.0",
-                        
-                        problemSolving: idxProb !== -1 ? parseInt(cells[idxProb]) || 0 : 0,
-                        buildingRelationship: idxRelat !== -1 ? parseInt(cells[idxRelat]) || 0 : 0,
-                        teamCollaboration: idxCollab !== -1 ? parseInt(cells[idxCollab]) || 0 : 0,
-                        achievingGoals: idxGoals !== -1 ? parseInt(cells[idxGoals]) || 0 : 0,
-                        trustworthiness: idxTrust !== -1 ? parseInt(cells[idxTrust]) || 0 : 0,
-                        leadingPeople: idxLead !== -1 ? parseInt(cells[idxLead]) || 0 : 0,
-                        customerOrientation: idxCust !== -1 ? parseInt(cells[idxCust]) || 0 : 0,
-                        businessSavvy: idxBiz !== -1 ? parseInt(cells[idxBiz]) || 0 : 0,
-                        
                         havPerformance: idxHavPerf !== -1 ? cells[idxHavPerf] : "",
-                        havPotential: idxHavPot !== -1 ? cells[idxHavPot] : "",
                         box9Matrix: idxBox9 !== -1 ? cells[idxBox9] : ""
                     };
                     MASTER_EMPLOYEE_DATA.push(employee);
@@ -497,7 +454,7 @@
             hAnchor.innerHTML = "";
             const sampleHavGrids = ["High", "Medium", "Low"];
             sampleHavGrids.forEach(g => {
-                let matchCount = filteredStateData.filter(e => e.havPerformance === g).length;
+                let matchCount = filteredStateData.filter(e => e.havPerformance && e.havPerformance.trim() === g).length;
                 let percentage = filteredStateData.length > 0 ? (matchCount / filteredStateData.length) * 100 : 0;
                 hAnchor.innerHTML += `
                     <div class="bar-node">
