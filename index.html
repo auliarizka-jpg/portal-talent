@@ -3,43 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enterprise Talent Management System - Production Stable</title>
+    <title>Advanced HR Executive Insights Dashboard</title>
+    <!-- Google Font System -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --primary-color: #005a70;
             --primary-dark: #0f2537;
             --secondary-teal: #2b7a78;
-            --bg-workspace: #f3f6f9;
+            --bg-workspace: #f4f7f6;
             --bg-card: #ffffff;
-            --text-main: #2b2d42;
-            --text-muted: #6c757d;
-            --border-color: #e2e8f0;
+            --text-main: #111827;
+            --text-muted: #6b7280;
+            --border-color: #e5e7eb;
+            --chart-teal-light: #2a9d8f;
+            --chart-blue-light: #0284c7;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
         body { background-color: var(--bg-workspace); color: var(--text-main); min-height: 100vh; display: flex; overflow-x: hidden; }
 
-        /* GATEWAY ACCESS SCREEN */
+        /* ACCESS GATEWAY SCREEN */
         #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%); display: flex; justify-content: center; align-items: center; z-index: 99999; }
         .login-card { background: var(--bg-card); padding: 45px; border-radius: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.25); width: 100%; max-width: 420px; text-align: center; }
         .login-card i.main-lock { font-size: 3.5rem; color: var(--primary-color); margin-bottom: 15px; }
         .login-card h2 { font-size: 1.6rem; color: var(--primary-dark); font-weight: 700; margin-bottom: 6px; }
         .login-card p { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 25px; }
         .input-control { width: 100%; padding: 12px 16px; margin-bottom: 15px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.95rem; outline: none; }
-        .btn-submit-auth { width: 100%; padding: 12px; background: var(--primary-color); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; width: 100%; }
-        
-        .error-message { color: #e76f51; font-size: 0.85rem; margin-top: 12px; display: none; font-weight: 600; text-align: left; background: #ffebe7; padding: 10px; border-radius: 4px; border-left: 4px solid #e76f51; }
+        .btn-submit-auth { width: 100%; padding: 12px; background: var(--primary-color); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; }
         .sync-spinner { display: none; margin-top: 15px; font-size: 0.9rem; font-weight: 600; color: var(--primary-color); }
         .sync-spinner i { animation: spin 1s linear infinite; margin-right: 6px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* APPLICATION SHELL */
+        /* APPLICATION CORE SHELL */
         .enterprise-sidebar { width: 260px; background: var(--primary-dark); color: white; position: fixed; top: 0; left: 0; height: 100vh; display: flex; flex-direction: column; z-index: 1000; }
         .brand-header { padding: 25px 24px; font-size: 1.15rem; font-weight: 700; border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; align-items: center; gap: 12px; }
         .nav-menu-list { list-style: none; padding: 20px 0; flex: 1; }
-        .nav-item-link { padding: 14px 24px; cursor: pointer; display: flex; align-items: center; gap: 14px; font-size: 0.95rem; color: #94a3b8; border-left: 4px solid transparent; }
+        .nav-item-link { padding: 14px 24px; cursor: pointer; display: flex; align-items: center; gap: 14px; font-size: 0.95rem; color: #94a3b8; border-left: 4px solid transparent; text-decoration: none; }
         .nav-item-link.active { background: rgba(255,255,255,0.04); color: white; border-left-color: var(--secondary-teal); }
         .user-profile-widget { padding: 20px; border-top: 1px solid rgba(255,255,255,0.06); display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: #94a3b8; }
         
@@ -47,33 +49,54 @@
         .module-viewport { display: none; }
         .module-viewport.active-view { display: block; }
 
-        /* CONTROLS */
-        .filter-panel-card { background: var(--primary-color); color: white; padding: 20px; border-radius: 8px; margin-bottom: 30px; display: flex; gap: 15px; align-items: flex-end; }
+        /* GLOBAL TOP FILTER CONTROL PANEL */
+        .filter-panel-card { background: var(--primary-color); color: white; padding: 16px 20px; border-radius: 8px; margin-bottom: 25px; display: flex; gap: 15px; align-items: flex-end; }
         .filter-node { display: flex; flex-direction: column; gap: 6px; flex: 1; }
-        .filter-node label { font-size: 0.75rem; font-weight: 700; color: #cbd5e1; text-transform: uppercase; }
-        .filter-node select, .filter-node input { padding: 10px 12px; border-radius: 6px; border: none; font-size: 0.85rem; width: 100%; }
-        .btn-reset-filter { padding: 10px 20px; background: var(--secondary-teal); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; height: 38px; }
+        .filter-node label { font-size: 0.72rem; font-weight: 700; color: #cbd5e1; text-transform: uppercase; letter-spacing: 0.5px; }
+        .filter-node select, .filter-node input { padding: 10px 12px; border-radius: 6px; border: none; font-size: 0.85rem; width: 100%; color: #333; outline: none; font-weight: 500; }
+        .btn-reset-filter { padding: 10px 20px; background: var(--secondary-teal); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; height: 38px; font-size: 0.85rem; }
 
-        .viewport-header { margin-bottom: 25px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; }
-        .viewport-header h1 { font-size: 1.5rem; color: var(--primary-dark); }
+        /* VIEWPORT GRAPHIC CONTENT SPECIFICATIONS */
+        .viewport-header { margin-bottom: 25px; }
+        .viewport-header h1 { font-size: 1.6rem; color: var(--primary-dark); font-weight: 700; }
+        .viewport-header p { font-size: 0.85rem; color: var(--text-muted); margin-top: 2px; }
         
-        .dashboard-kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 25px; margin-bottom: 35px; }
-        .kpi-card { background: var(--bg-card); padding: 24px; border-radius: 8px; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; }
-        .kpi-data h3 { font-size: 2rem; font-weight: 700; color: var(--primary-dark); }
-        .kpi-data p { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+        /* TOP BIG METRICS CARDS AS IN GEMINI_GENERATED_IMAGE_2VA2L82VA2L82VA2.PNG */
+        .dashboard-kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 25px; }
+        .kpi-card { background: var(--bg-card); padding: 20px 24px; border-radius: 8px; border: 1px solid var(--border-color); display: flex; flex-direction: column; position: relative; }
+        .kpi-title { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .kpi-main-row { display: flex; align-items: baseline; gap: 12px; margin-top: 12px; }
+        .kpi-value { font-size: 1.85rem; font-weight: 700; color: var(--primary-dark); }
+        .kpi-subtext { font-size: 0.85rem; font-weight: 600; color: #10b981; }
+        .sparkline-mock { position: absolute; right: 24px; bottom: 20px; width: 80px; height: 25px; background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 30" width="100" height="30"><path d="M0,25 Q15,5 30,20 T60,10 T90,5 T100,15" fill="none" stroke="%23005a70" stroke-width="3"/></svg>') no-repeat center; opacity: 0.4; }
 
-        .analytics-charts-container { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-        .chart-visual-card { background: var(--bg-card); border-radius: 8px; border: 1px solid var(--border-color); padding: 25px; }
-        .chart-visual-card h3 { font-size: 0.9rem; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; }
+        /* DONUT CHARTS PANEL ROW LAYOUT */
+        .donut-charts-row-panel { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-bottom: 25px; }
+        .donut-visual-card { background: var(--bg-card); border-radius: 8px; border: 1px solid var(--border-color); padding: 18px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+        .donut-visual-card h4 { font-size: 0.78rem; font-weight: 700; color: var(--primary-dark); text-transform: uppercase; margin-bottom: 14px; width: 100%; text-align: left; border-bottom: 1px solid var(--border-color); padding-bottom: 6px; }
         
-        .distribution-chart-stack { display: flex; flex-direction: column; gap: 16px; }
-        .bar-node { display: flex; flex-direction: column; gap: 6px; }
-        .bar-label-info { display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 600; }
-        .bar-rail { width: 100%; height: 8px; background: #edf2f7; border-radius: 4px; }
-        .bar-core-fill { height: 100%; border-radius: 4px; background: var(--primary-color); width: 0%; transition: width 0.5s; }
+        /* Pure CSS Circular Donut Generator Architecture */
+        .donut-chart-circle-frame { width: 110px; height: 110px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 14px; position: relative; box-shadow: inset 0 0 0 14px #edf2f7; }
+        .donut-inner-center-value { font-size: 0.95rem; font-weight: 700; color: var(--primary-dark); position: absolute; z-index: 5; }
+        .donut-legends-stack { display: flex; flex-direction: column; gap: 6px; width: 100%; text-align: left; }
+        .legend-item-line { display: flex; justify-content: space-between; font-size: 0.76rem; font-weight: 500; }
+        .legend-bullet-label { display: flex; align-items: center; gap: 6px; color: var(--text-main); }
+        .legend-bullet-dot { width: 8px; height: 8px; border-radius: 50%; }
 
-        /* TREE VIEW */
-        .org-structure-layout-split { display: grid; grid-template-columns: 65% 35%; gap: 30px; }
+        /* ADVANCED STACKED BAR GRAPH PANELS */
+        .bar-charts-double-layout { display: grid; grid-template-columns: 45% 55%; gap: 20px; }
+        .analytics-graphic-card { background: var(--bg-card); border-radius: 8px; border: 1px solid var(--border-color); padding: 24px; }
+        .analytics-graphic-card h3 { font-size: 0.85rem; font-weight: 700; color: var(--primary-dark); border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* Distribution Dynamic Stack System CSS */
+        .distribution-graph-grid { display: flex; flex-direction: column; gap: 12px; max-height: 380px; overflow-y: auto; padding-right: 5px; }
+        .chart-row-node { display: flex; flex-direction: column; gap: 5px; }
+        .chart-row-meta { display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 600; }
+        .chart-row-rail-bg { width: 100%; height: 12px; background: #edf2f7; border-radius: 6px; overflow: hidden; }
+        .chart-row-fill-bar { height: 100%; border-radius: 6px; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        /* MODUL 2 TREE COMPONENT */
+        .org-structure-layout-split { display: grid; grid-template-columns: 1fr; gap: 30px; }
         .tree-viewport-card { background: var(--bg-card); padding: 30px; border-radius: 8px; border: 1px solid var(--border-color); min-height: 500px; display: flex; flex-direction: column; align-items: center; overflow-x: auto; width: 100%; }
         .chart-tree-root { display: flex; flex-direction: column; align-items: center; width: 100%; }
         .tree-node-block { background: var(--primary-dark); color: white; padding: 12px 24px; border-radius: 6px; font-weight: 700; text-align: center; min-width: 160px; }
@@ -86,68 +109,141 @@
 </head>
 <body>
 
+    <!-- CONTROL PORTAL LOGIN SCREEN -->
     <div id="login-screen">
         <div class="login-card">
             <i class="fa-solid fa-shield-halved main-lock"></i>
             <h2>Enterprise Portal Gateway</h2>
-            <p>Silakan masuk untuk sinkronisasi data</p>
+            <p>Silakan masuk untuk memuat visualisasi analitik</p>
             <input type="text" id="username" class="input-control" placeholder="Email (admin@enterprise.co.id)">
             <input type="password" id="password" class="input-control" placeholder="Password Akses">
             <button class="btn-submit-auth" onclick="executeAuthenticationRequest()">Otentikasi & Masuk</button>
-            
-            <div id="loadingStatus" class="sync-spinner">
-                <i class="fa-solid fa-spinner"></i> Sinkronisasi Live Data Google Sheets...
-            </div>
-            <div id="login-error" class="error-message"></div>
+            <div id="loadingStatus" class="sync-spinner"><i class="fa-solid fa-spinner"></i> Merangkum Struktur Spreadsheet...</div>
+            <div id="login-error" class="error-message" style="color:#ef4444; margin-top:10px; display:none;">Kredensial Otorisasi Salah!</div>
         </div>
     </div>
 
+    <!-- APPLICATION PANEL DISPLAY SHELL -->
     <div id="app-shell" style="display: none; width: 100%;">
         <div class="enterprise-sidebar">
-            <div class="brand-header"><i class="fa-solid fa-cubes-stacked"></i> <span>Talent Intelligence</span></div>
+            <div class="brand-header"><i class="fa-solid fa-cubes-stacked"></i> <span>ExecData Insights</span></div>
             <ul class="nav-menu-list">
                 <li class="nav-item-link active" id="tab-dashboard" onclick="switchActiveViewport('dashboard')"><i class="fa-solid fa-chart-pie"></i> Executive Dashboard</li>
                 <li class="nav-item-link" id="tab-organization" onclick="switchActiveViewport('organization')"><i class="fa-solid fa-sitemap"></i> Organization Structure</li>
             </ul>
             <div class="user-profile-widget">
-                <div><i class="fa-solid fa-circle-user"></i> Admin</div>
+                <div><i class="fa-solid fa-circle-user"></i> Exec Admin</div>
                 <i class="fa-solid fa-right-from-bracket" style="cursor:pointer" onclick="executeLogoffProcedure()"></i>
             </div>
         </div>
 
         <div class="workspace-content">
+            <!-- GLOBAL TOP FILTER CONTROL PANEL MATRIX -->
             <div class="filter-panel-card">
                 <div class="filter-node">
                     <label>Directorate</label>
-                    <select id="selDirectorate" onchange="handleDirectorateFilterChange()"><option value="ALL">-- All --</option></select>
+                    <select id="selDirectorate" onchange="handleDirectorateFilterChange()"><option value="ALL">-- All Directorate --</option></select>
                 </div>
                 <div class="filter-node">
                     <label>Division</label>
-                    <select id="selDivision" onchange="applyGlobalFiltersRecomputation()"><option value="ALL">-- All --</option></select>
+                    <select id="selDivision" onchange="applyGlobalFiltersRecomputation()"><option value="ALL">-- All Division --</option></select>
                 </div>
                 <div class="filter-node">
-                    <label>Search Employee</label>
-                    <input type="text" id="inpSearch" placeholder="Cari nama / ID..." oninput="applyGlobalFiltersRecomputation()">
+                    <label>Search Keyword</label>
+                    <input type="text" id="inpSearch" placeholder="Cari Nama / ID Pegawai..." oninput="applyGlobalFiltersRecomputation()">
                 </div>
-                <button class="btn-reset-filter" onclick="resetGlobalFiltersSystem()">Reset</button>
+                <button class="btn-reset-filter" onclick="resetGlobalFiltersSystem()">Reset Filter</button>
             </div>
 
+            <!-- TAB 1: EXECUTIVE ADVANCED HR INSIGHTS DASHBOARD Layout As In Gemini_Generated_Image_2va2l82va2l82va2.png -->
             <div id="view-dashboard" class="module-viewport active-view">
-                <div class="viewport-header"><h1>Workforce Analytics Dashboard</h1></div>
-                <div class="dashboard-kpi-grid">
-                    <div class="kpi-card"><div class="kpi-data"><h3 id="kpiTotalEmp">0</h3><p>Total Headcount</p></div></div>
-                    <div class="kpi-card"><div class="kpi-data"><h3 id="kpiTotalDir">0</h3><p>Directorates</p></div></div>
-                    <div class="kpi-card"><div class="kpi-data"><h3 id="kpiTotalDiv">0</h3><p>Divisions</p></div></div>
-                    <div class="kpi-card"><div class="kpi-data"><h3 id="kpiAvgPerf">0.0</h3><p>Avg Perf Score</p></div></div>
+                <div class="viewport-header">
+                    <h1>Advanced Executive HR Insights</h1>
+                    <p>Real-time corporate workforce analytic structure stream matrix data.</p>
                 </div>
-                <div class="analytics-charts-container">
-                    <div class="chart-visual-card"><h3>Talent Segment Distribution</h3><div id="chartTalentClassAnchor" class="distribution-chart-stack"></div></div>
-                    <div class="chart-visual-card"><h3>Human Asset Value Level</h3><div id="chartHavAnchor" class="distribution-chart-stack"></div></div>
+                
+                <!-- TOP BANNER KPI HIGHLIGHT ROW -->
+                <div class="dashboard-kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-title">Total Employees</div>
+                        <div class="kpi-main-row"><span class="kpi-value" id="kpiTotalEmp">0</span><span class="kpi-subtext">Active</span></div>
+                        <div class="sparkline-mock"></div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-title">Directorates</div>
+                        <div class="kpi-main-row"><span class="kpi-value" id="kpiTotalDir">0</span><span class="kpi-subtext">Active</span></div>
+                        <div class="sparkline-mock"></div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-title">Divisions</div>
+                        <div class="kpi-main-row"><span class="kpi-value" id="kpiTotalDiv">0</span><span class="kpi-subtext">Active</span></div>
+                        <div class="sparkline-mock"></div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-title">Departments</div>
+                        <div class="kpi-main-row"><span class="kpi-value" id="kpiTotalDept">0</span><span class="kpi-subtext">Active</span></div>
+                        <div class="sparkline-mock"></div>
+                    </div>
+                </div>
+
+                <!-- MIDDLE ROW PANEL: DONUT CHARTS MATRIX RATIO SECTIONS -->
+                <div class="donut-charts-row-panel">
+                    <div class="donut-visual-card">
+                        <h4>Gender Ratio</h4>
+                        <div class="donut-chart-circle-frame" id="circleGender">
+                            <span class="donut-inner-center-value" id="valGenderCenter">-</span>
+                        </div>
+                        <div class="donut-legends-stack" id="legendGender"></div>
+                    </div>
+                    <div class="donut-visual-card">
+                        <h4>Employment Type</h4>
+                        <div class="donut-chart-circle-frame" id="circleType">
+                            <span class="donut-inner-center-value" id="valTypeCenter">-</span>
+                        </div>
+                        <div class="donut-legends-stack" id="legendType"></div>
+                    </div>
+                    <div class="donut-visual-card">
+                        <h4>Workforce Location</h4>
+                        <div class="donut-chart-circle-frame" id="circleLoc">
+                            <span class="donut-inner-center-value" id="valLocCenter">-</span>
+                        </div>
+                        <div class="donut-legends-stack" id="legendLoc"></div>
+                    </div>
+                    <div class="donut-visual-card">
+                        <h4>Work Model</h4>
+                        <div class="donut-chart-circle-frame" id="circleModel">
+                            <span class="donut-inner-center-value" id="valModelCenter">-</span>
+                        </div>
+                        <div class="donut-legends-stack" id="legendModel"></div>
+                    </div>
+                    <div class="donut-visual-card">
+                        <h4>Leadership Split</h4>
+                        <div class="donut-chart-circle-frame" id="circleLeader">
+                            <span class="donut-inner-center-value" id="valLeaderCenter">-</span>
+                        </div>
+                        <div class="donut-legends-stack" id="legendLeader"></div>
+                    </div>
+                </div>
+
+                <!-- BOTTOM ROW PANEL: ADVANCED BAR STACK GRAPH SECTIONS -->
+                <div class="bar-charts-double-layout">
+                    <div class="analytics-graphic-card">
+                        <h3>Education Cluster Density</h3>
+                        <div class="distribution-graph-grid" id="chartEducationAnchor"></div>
+                    </div>
+                    <div class="analytics-graphic-card">
+                        <h3>Employee Levels Hierarchy (01 - 13A)</h3>
+                        <div class="distribution-graph-grid" id="chartLevelsAnchor"></div>
+                    </div>
                 </div>
             </div>
 
+            <!-- TAB 2: ORGANIZATIONAL TREE MODULE STRUCTURE Explorer -->
             <div id="view-organization" class="module-viewport">
-                <div class="viewport-header"><h1>Organization Structure Explorer</h1></div>
+                <div class="viewport-header">
+                    <h1>Organization Structure Explorer</h1>
+                    <p>Visualisasi pohon kedudukan struktural fungsional korporasi fungsional dinamis.</p>
+                </div>
                 <div class="org-structure-layout-split">
                     <div class="tree-viewport-card">
                         <div class="chart-tree-root">
@@ -156,13 +252,9 @@
                             <div id="htmlTreeLiveAnchor" style="width:100%; display:flex; flex-direction:column; align-items:center;"></div>
                         </div>
                     </div>
-                    <div class="chart-visual-card">
-                        <h3>Filtered Summary</h3>
-                        <p>Active Employees: <strong id="miniKpiCount">0</strong></p>
-                        <p>Performance Avg: <strong id="miniKpiAvg">0.0</strong></p>
-                    </div>
                 </div>
             </div>
+
         </div>
     </div>
 
@@ -190,7 +282,6 @@
                 sessionStorage.setItem("enterprise_auth_state", "validated");
                 fetchLiveDatabaseEngine();
             } else {
-                err.innerText = "Kredensial salah!";
                 err.style.display = "block";
             }
         }
@@ -207,22 +298,13 @@
         }
 
         async function fetchLiveDatabaseEngine() {
-            const err = document.getElementById("login-error");
             try {
                 const response = await fetch(LINK_SPREADSHEET_CSV + "&nocache=" + new Date().getTime());
-                if (!response.ok) throw new Error("Status HTTP: " + response.status);
-                
                 const dataText = await response.text();
                 parseRawCsvToJSON(dataText);
-                
-                document.getElementById("login-screen").style.display = "none";
-                document.getElementById("app-shell").style.display = "flex";
             } catch (error) {
                 console.error(error);
-                sessionStorage.removeItem("enterprise_auth_state");
-                document.getElementById("loadingStatus").style.display = "none";
-                err.innerText = "Koneksi Gagal: " + error.message;
-                err.style.display = "block";
+                alert("Gagal memuat streams data terupdate!");
             }
         }
 
@@ -231,7 +313,6 @@
             if (rawRows.length === 0) return;
 
             let delimiter = rawRows[0].includes(";") ? ";" : ",";
-            
             let headerRowIndex = 0;
             let headers = [];
             
@@ -244,36 +325,43 @@
                 }
             }
 
-            if (headers.length === 0) {
-                alert("PERINGATAN: Tidak berhasil menemukan baris Header di Google Sheets Anda!");
-                return;
-            }
-
             MASTER_EMPLOYEE_DATA = [];
             const findColumnIdx = (name) => headers.indexOf(name.toLowerCase().trim());
 
+            // Pemetaan Seluruh Nama Kolom Sesuai Dump Baru Anda
             const idxId = findColumnIdx("employee id");
             const idxNama = findColumnIdx("nama");
+            const idxGender = findColumnIdx("gender");
+            const idxStatus = findColumnIdx("status"); // BPO / Organic
+            const idxLokasi = findColumnIdx("lokasi"); // HO / Site
+            const idxWorkModel = findColumnIdx("work model"); // Hybrid / Fulltime On-site
             const idxDir = findColumnIdx("directorate");
             const idxDiv = findColumnIdx("division");
+            const idxDept = findColumnIdx("department");
+            const idxStaffLeader = findColumnIdx("staff/leader");
+            const idxLevel = findColumnIdx("level");
+            const idxEducation = findColumnIdx("level of education");
             const idxPosition = findColumnIdx("employee position");
             const idxAvgPerf = findColumnIdx("average performance");
-            const idxHavPerf = findColumnIdx("human asset value - performance");
-            const idxBox9 = findColumnIdx("9 box hav matrix");
 
             for (let i = headerRowIndex + 1; i < rawRows.length; i++) {
                 let cells = deconstructCsvLine(rawRows[i], delimiter).map(c => c.replace(/["']/g, '').trim());
-                
                 if (cells.length > 0 && cells[idxNama !== -1 ? idxNama : 2]) {
                     MASTER_EMPLOYEE_DATA.push({
                         employeeId: idxId !== -1 ? cells[idxId] : "N/A",
                         nama: idxNama !== -1 ? cells[idxNama] : "Unknown",
-                        directorate: (idxDir !== -1 && cells[idxDir]) ? cells[idxDir] : "Unassigned Directorate",
-                        division: (idxDiv !== -1 && cells[idxDiv]) ? cells[idxDiv] : "Unassigned Division",
+                        gender: idxGender !== -1 ? cells[idxGender] : "Male",
+                        status: idxStatus !== -1 ? cells[idxStatus] : "Organic",
+                        lokasi: idxLokasi !== -1 ? cells[idxLokasi] : "HO",
+                        workModel: idxWorkModel !== -1 ? cells[idxWorkModel] : "Fulltime On-site",
+                        directorate: idxDir !== -1 && cells[idxDir] ? cells[idxDir] : "Unassigned Directorate",
+                        division: idxDiv !== -1 && cells[idxDiv] ? cells[idxDiv] : "Unassigned Division",
+                        department: idxDept !== -1 && cells[idxDept] ? cells[idxDept] : "Unassigned Department",
+                        staffLeader: idxStaffLeader !== -1 ? cells[idxStaffLeader] : "Staff",
+                        level: idxLevel !== -1 ? cells[idxLevel] : "01",
+                        education: idxEducation !== -1 ? cells[idxEducation] : "S1",
                         employeePosition: idxPosition !== -1 ? cells[idxPosition] : "Staff",
-                        averagePerformanceScore: idxAvgPerf !== -1 ? cells[idxAvgPerf] : "0.0",
-                        havPerformance: idxHavPerf !== -1 ? cells[idxHavPerf] : "Low",
-                        box9Matrix: idxBox9 !== -1 ? cells[idxBox9] : "SOLID PERFORMER"
+                        averagePerformanceScore: idxAvgPerf !== -1 ? cells[idxAvgPerf] : "0.0"
                     });
                 }
             }
@@ -324,7 +412,7 @@
             filteredStateData = MASTER_EMPLOYEE_DATA.filter(emp => {
                 const matchDir = (fDir === "ALL" || emp.directorate === fDir);
                 const matchDiv = (fDiv === "ALL" || emp.division === fDiv);
-                const matchTxt = !keyword || (emp.nama && emp.nama.toLowerCase().includes(keyword)) || (emp.employeeId && emp.employeeId.toString().includes(keyword));
+                const matchTxt = !keyword || emp.nama.toLowerCase().includes(keyword) || emp.employeeId.toString().includes(keyword);
                 return matchDir && matchDiv && matchTxt;
             });
 
@@ -351,60 +439,99 @@
             else if (activeModuleView === "organization") renderOrganizationalTreeModule();
         }
 
+        // =========================================================================
+        // ENGINE RE-RENDER INTERFACE DARI GEMINI_GENERATED_IMAGE_2VA2L82VA2L82VA2.PNG
+        // =========================================================================
         function renderExecutiveDashboardVisuals() {
-            document.getElementById("kpiTotalEmp").innerText = filteredStateData.length;
+            const total = filteredStateData.length;
+            document.getElementById("kpiTotalEmp").innerText = total.toLocaleString('id-ID');
             document.getElementById("kpiTotalDir").innerText = [...new Set(filteredStateData.map(e => e.directorate))].length;
             document.getElementById("kpiTotalDiv").innerText = [...new Set(filteredStateData.map(e => e.division))].length;
+            document.getElementById("kpiTotalDept").innerText = [...new Set(filteredStateData.map(e => e.department))].length;
 
-            let totalScore = 0, validRows = 0;
-            filteredStateData.forEach(e => {
-                // FIXED PROTECTOR: Memberikan fallback teks kosong jika data 'averagePerformanceScore' bernilai undefined
-                let rawScore = e.averagePerformanceScore || "0.0";
-                let score = parseFloat(rawScore.replace(",", "."));
-                if (!isNaN(score)) { totalScore += score; validRows++; }
-            });
-            document.getElementById("kpiAvgPerf").innerText = validRows > 0 ? (totalScore / validRows).toFixed(1) : "0.0";
+            // HELPER GENERATOR PURE CSS PIE DENSITY MULTI-SEGMENT DONUT
+            const buildDonutChartFramework = (circleId, legendId, centerId, dataField, colorMap) => {
+                const counts = {};
+                filteredStateData.forEach(e => {
+                    let key = e[dataField] ? e[dataField].trim() : "Unassigned";
+                    counts[key] = (counts[key] || 0) + 1;
+                });
 
-            const tAnchor = document.getElementById("chartTalentClassAnchor");
-            tAnchor.innerHTML = "";
-            ["STAR", "HIGH PERFORMER", "PROMISING", "SOLID PERFORMER", "DEVELOPING", "INEFFECTIVE"].forEach(segment => {
-                let matchCount = filteredStateData.filter(e => (e.box9Matrix || "").toUpperCase().trim() === segment).length;
-                let pct = filteredStateData.length > 0 ? (matchCount / filteredStateData.length) * 100 : 0;
-                tAnchor.innerHTML += `<div class="bar-node"><div class="bar-label-info"><span>${segment}</span><span>${matchCount} Staff (${pct.toFixed(0)}%)</span></div><div class="bar-rail"><div class="bar-core-fill" style="width: ${pct}%;"></div></div></div>`;
-            });
+                const sortedKeys = Object.keys(counts).sort((a,b) => counts[b] - counts[a]);
+                const legAnchor = document.getElementById(legendId);
+                legAnchor.innerHTML = "";
 
-            const hAnchor = document.getElementById("chartHavAnchor");
-            hAnchor.innerHTML = "";
-            ["High", "Medium", "Low"].forEach(g => {
-                let matchCount = filteredStateData.filter(e => (e.havPerformance || "").toLowerCase().trim() === g.toLowerCase()).length;
-                let pct = filteredStateData.length > 0 ? (matchCount / filteredStateData.length) * 100 : 0;
-                hAnchor.innerHTML += `<div class="bar-node"><div class="bar-label-info"><span>Performance: ${g}</span><span>${matchCount} Staff (${pct.toFixed(0)}%)</span></div><div class="bar-rail"><div class="bar-core-fill" style="width: ${pct}%; background:var(--secondary-teal)"></div></div></div>`;
-            });
+                let cumPct = 0;
+                let gradientString = "conic-gradient(";
+                let colorList = Object.values(colorMap);
+
+                sortedKeys.forEach((key, index) => {
+                    let count = counts[key];
+                    let pct = total > 0 ? (count / total) * 100 : 0;
+                    let clr = colorList[index % colorList.length];
+
+                    legAnchor.innerHTML += `
+                        <div class="legend-item-line">
+                            <span class="legend-bullet-label"><span class="legend-bullet-dot" style="background:${clr}"></span> ${key}</span>
+                            <span><strong>${pct.toFixed(0)}%</strong> [${count}]</span>
+                        </div>
+                    `;
+
+                    gradientString += `${clr} ${cumPct}% ${(cumPct + pct)}%, `;
+                    cumPct += pct;
+                });
+
+                gradientString = gradientString.slice(0, -2) + ")";
+                document.getElementById(circleId).style.background = total > 0 ? gradientString : "#edf2f7";
+                document.getElementById(centerId).innerText = total;
+            };
+
+            // Render 5 Donut Visual Panels
+            buildDonutChartFramework("circleGender", "legendGender", "valGenderCenter", "gender", {0: "#0284c7", 1: "#10b981", 2: "#f59e0b"});
+            buildDonutChartFramework("circleType", "legendType", "valTypeCenter", "status", {0: "#005a70", 1: "#2b7a78", 2: "#94a3b8"});
+            buildDonutChartFramework("circleLoc", "legendLoc", "valLocCenter", "lokasi", {0: "#10b981", 1: "#0284c7", 2: "#ef4444"});
+            buildDonutChartFramework("circleModel", "legendModel", "valModelCenter", "workModel", {0: "#0284c7", 1: "#f59e0b", 2: "#005a70"});
+            buildDonutChartFramework("circleLeader", "legendLeader", "valLeaderCenter", "staffLeader", {0: "#10b981", 1: "#005a70", 2: "#6b7280"});
+
+            // HELPER PROGRESS BAR DENSITY BLOCK
+            const renderDenseBarStack = (anchorId, arrayKeys, fieldSource, barColor) => {
+                const anchor = document.getElementById(anchorId);
+                anchor.innerHTML = "";
+
+                arrayKeys.forEach(key => {
+                    let matchCount = filteredStateData.filter(e => e[fieldSource] && e[fieldSource].toString().toUpperCase().trim() === key.toUpperCase().trim()).length;
+                    let pct = total > 0 ? (matchCount / total) * 100 : 0;
+
+                    anchor.innerHTML += `
+                        <div class="chart-row-node">
+                            <div class="chart-row-meta"><span>${key}</span><span><strong>${matchCount}</strong> Karyawan (${pct.toFixed(0)}%)</span></div>
+                            <div class="chart-row-rail-bg"><div class="chart-row-fill-bar" style="width:${pct}%; background:${barColor}"></div></div>
+                        </div>
+                    `;
+                });
+            };
+
+            // Render Kluster Education & Spektrum Level Jabatan
+            const listEdu = ["SMA/SMK", "D1", "D2", "D3", "D4", "S1", "S2", "S3"];
+            const listLevels = ["01", "02", "03", "04", "05", "06", "07", "08A", "08B", "09A", "09B", "10A", "10B", "11A", "11B", "12A", "12B", "13A"];
+            
+            renderDenseBarStack("chartEducationAnchor", listEdu, "education", "var(--primary-color)");
+            renderDenseBarStack("chartLevelsAnchor", listLevels, "level", "var(--secondary-teal)");
         }
 
         function renderOrganizationalTreeModule() {
             const anchor = document.getElementById("htmlTreeLiveAnchor");
             anchor.innerHTML = "";
-            
-            document.getElementById("miniKpiCount").innerText = filteredStateData.length;
-            
-            let totalScore = 0, validRows = 0;
-            filteredStateData.forEach(e => {
-                let rawScore = e.averagePerformanceScore || "0.0";
-                let score = parseFloat(rawScore.replace(",", "."));
-                if (!isNaN(score)) { totalScore += score; validRows++; }
-            });
-            document.getElementById("miniKpiAvg").innerText = validRows > 0 ? (totalScore / validRows).toFixed(1) : "0.0";
 
             if (filteredStateData.length === 0) {
-                anchor.innerHTML = "<div>Tidak ada data fungsional yang cocok dengan kriteria filter.</div>";
+                anchor.innerHTML = "<div>Tidak ada data fungsional cocok filter aktif.</div>";
                 return;
             }
 
             const treeMap = {};
             filteredStateData.forEach(emp => {
-                let dir = emp.directorate || "Unassigned Directorate";
-                let div = emp.division || "Unassigned Division";
+                let dir = emp.directorate;
+                let div = emp.division;
                 if (!treeMap[dir]) treeMap[dir] = {};
                 if (!treeMap[dir][div]) treeMap[dir][div] = [];
                 treeMap[dir][div].push(emp);
@@ -420,7 +547,7 @@
 
                 for (const divName in treeMap[dirName]) {
                     let divContainer = document.createElement("div");
-                    divContainer.style = "display: flex; flex-direction: column; align-items: center;";
+                    divContainer.setAttribute("style", "display: flex; flex-direction: column; align-items: center;");
                     divContainer.innerHTML = `<div class="tree-node-block div-box">${divName}</div><div class="tree-branch-connector"></div>`;
 
                     let deptContainer = document.createElement("div");
@@ -429,7 +556,7 @@
                     treeMap[dirName][divName].forEach(emp => {
                         let empBox = document.createElement("div");
                         empBox.className = "tree-node-block dept-box";
-                        empBox.innerHTML = `<h4>${emp.nama || 'N/A'}</h4><p style="font-size:0.75rem;color:var(--text-muted);margin-top:2px;">${emp.employeePosition || '-'}</p><p style="font-size:0.68rem;color:var(--primary-color);margin-top:4px;">ID: ${emp.employeeId || '-'}</p>`;
+                        empBox.innerHTML = `<h4>${emp.nama}</h4><p style="font-size:0.75rem;color:var(--text-muted);margin-top:2px;">${emp.employeePosition}</p><p style="font-size:0.68rem;color:var(--primary-color);margin-top:4px;">ID: ${emp.employeeId}</p>`;
                         deptContainer.appendChild(empBox);
                     });
                     divContainer.appendChild(deptContainer);
